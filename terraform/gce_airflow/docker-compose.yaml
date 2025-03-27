@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  airflow:
+    build: ./airflow
+    restart: always
+    ports:
+        - "8080:8080"
+    environment:
+        - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+        - AIRFLOW__CORE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
+    volumes:
+        - airflow_data:/opt/airflow
+
+  jupyter:
+    build: ./jupyter
+    restart: always
+    ports:
+        - "8888:8888"
+    environment: 
+        - JUPYTER_PASSWORD=argon2:$argon2id$v=19$m=10240,t=10,p=8$4AGzG9bQiF9IWPmZSUNSNw$EsMhQs1QL5qTNMcT0dt3WWYCgrOvlsMUx8gWs/wxw1I
+    volumes:
+        - jupyter_data:/home/jovyan
+
+volumes:
+    airflow_data:
+    jupyter_data:
