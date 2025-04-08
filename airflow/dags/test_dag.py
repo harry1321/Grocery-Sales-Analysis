@@ -1,4 +1,4 @@
-from airflow.dags.helper.test import testf
+from .helper.test import testf
 
 
 default_args={
