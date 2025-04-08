@@ -1,6 +1,6 @@
 # Dockerfile for Apache Airflow
-FROM apache/airflow:2.8.4
+FROM apache/airflow
 
 # Copy the necessary files
-COPY ./requirements.txt ${AIRFLOW_HOME}/requirements.txt
-RUN pip install --no-cache-dir -r ${AIRFLOW_HOME}/requirements.txt
+COPY ./requirements.txt /requirements.txt
+RUN pip install --no-cache-dir -r /requirements.txt
