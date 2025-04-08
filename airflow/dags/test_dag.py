@@ -1,4 +1,4 @@
-from helper.test import testf
+from helper.test import *
 
 from airflow.models import DAG
 from airflow.operators.empty import EmptyOperator
