@@ -3,14 +3,16 @@ import logging
 from pathlib import Path
 
 from pyspark.sql import SparkSession
+from pyspark.conf import SparkConf
+from pyspark.context import SparkContext
 from pyspark.sql.functions import col, concat_ws, year, month, dayofmonth, dayofweek
 
 from raw_data_schema import categories_schema, cities_schema, countries_schema, customers_schema, employees_schema, products_schema, sales_schema
 
 # 使用 pathlib 來指定 storage.json 的絕對路徑
-storage_json_path = Path(__file__).resolve().parent / 'secrets' / 'storage.json'
+credentials_path = Path(__file__).resolve().parent / 'secrets' / 'storage.json'
 # 將金鑰路徑設置為環境變數
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(storage_json_path)
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(credentials_path)
 
 # 設定 logger，寫入外部檔案
 logging.basicConfig(
@@ -37,10 +39,26 @@ def read_csv_with_schema(file_name, schema):
         logger.error(f"Failed to read {file_name}: {str(e)}")
         return None
 
+# 與GCS連結
+conf = SparkConf() \
+    .setMaster('local[*]') \
+    .setAppName('test') \
+    .set("spark.jars", "./lib/gcs-connector-hadoop3-2.2.5.jar") \
+    .set("spark.hadoop.google.cloud.auth.service.account.enable", "true") \
+    .set("spark.hadoop.google.cloud.auth.service.account.json.keyfile", credentials_path)
+sc = SparkContext(conf=conf)
+
+hadoop_conf = sc._jsc.hadoopConfiguration()
+
+hadoop_conf.set("fs.AbstractFileSystem.gs.impl",  "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS")
+hadoop_conf.set("fs.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem")
+hadoop_conf.set("fs.gs.auth.service.account.json.keyfile", credentials_path)
+hadoop_conf.set("fs.gs.auth.service.account.enable", "true")
+
 # 初始化 SparkSession
 spark = SparkSession.builder \
     .appName("Grocery Sales ETL") \
-    .config("spark.hadoop.google.cloud.auth.service.account.json.keyfile", str(storage_json_path)) \
+    .config(conf=sc.getConf()) \
     .getOrCreate()
 
 logger.info("SparkSession initialized")
