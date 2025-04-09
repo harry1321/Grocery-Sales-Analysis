@@ -10,11 +10,15 @@ from pyspark.sql.functions import col, concat_ws, year, month, dayofmonth, dayof
 from raw_data_schema import categories_schema, cities_schema, countries_schema, customers_schema, employees_schema, products_schema, sales_schema
 
 # 使用 pathlib 來指定 storage.json 的絕對路徑
-credentials_path = Path(__file__).resolve().parent / 'secrets' / 'storage.json'
-jars_path = Path(__file__).resolve().parent / 'gcs-maven-deps'/ 'lib' / 'gcs-connector-hadoop3-2.2.5.jar'
+base_path = Path(__file__).resolve().parent.parent  # 這將指向 Retail-Promo-Analysis 根目錄
+credentials_path = base_path / 'secrets' / 'storage.json'
+jars_path = base_path / 'gcs-maven-deps' / 'lib' / 'gcs-connector-hadoop3-2.2.5.jar'
 print(f"設定的 GCS 連接器檔案: {jars_path}")
+# 確保檔案存在
 if not jars_path.exists():
     print(f"找不到 GCS 連接器檔案: {jars_path}")
+else:
+    print(f"找到 GCS 連接器檔案: {jars_path}")
 
 # 將金鑰路徑設置為環境變數
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(credentials_path)
