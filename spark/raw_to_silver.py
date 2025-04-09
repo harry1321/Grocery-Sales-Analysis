@@ -42,7 +42,7 @@ def read_csv_with_schema(file_name, schema):
 # 與GCS連結
 conf = SparkConf() \
     .setMaster('local[*]') \
-    .setAppName('test') \
+    .setAppName('Grocery Sales ETL') \
     .set("spark.jars", "./lib/gcs-connector-hadoop3-2.2.5.jar") \
     .set("spark.hadoop.google.cloud.auth.service.account.enable", "true") \
     .set("spark.hadoop.google.cloud.auth.service.account.json.keyfile", str(credentials_path))
@@ -57,7 +57,6 @@ hadoop_conf.set("fs.gs.auth.service.account.enable", "true")
 
 # 初始化 SparkSession
 spark = SparkSession.builder \
-    .appName("Grocery Sales ETL") \
     .config(conf=sc.getConf()) \
     .getOrCreate()
 
