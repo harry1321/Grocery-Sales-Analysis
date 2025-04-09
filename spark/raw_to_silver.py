@@ -11,6 +11,7 @@ from raw_data_schema import categories_schema, cities_schema, countries_schema, 
 
 # 使用 pathlib 來指定 storage.json 的絕對路徑
 credentials_path = Path(__file__).resolve().parent / 'secrets' / 'storage.json'
+jars_path = Path(__file__).resolve().parent / 'gcs-maven-deps'/ 'lib' / 'gcs-connector-hadoop3-2.2.5.jar'
 # 將金鑰路徑設置為環境變數
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(credentials_path)
 
@@ -43,7 +44,7 @@ def read_csv_with_schema(file_name, schema):
 conf = SparkConf() \
     .setMaster('local[*]') \
     .setAppName('Grocery Sales ETL') \
-    .set("spark.jars", "./lib/gcs-connector-hadoop3-2.2.5.jar") \
+    .set("spark.jars", str(jars_path)) \
     .set("spark.hadoop.google.cloud.auth.service.account.enable", "true") \
     .set("spark.hadoop.google.cloud.auth.service.account.json.keyfile", str(credentials_path))
 sc = SparkContext(conf=conf)
