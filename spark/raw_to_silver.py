@@ -40,7 +40,7 @@ def read_csv_with_schema(file_name, schema):
 # 初始化 SparkSession
 spark = SparkSession.builder \
     .appName("Grocery Sales ETL") \
-    .config("spark.hadoop.google.cloud.auth.service.account.json.keyfile", "/path/to/secrets/storage.json") \
+    .config("spark.hadoop.google.cloud.auth.service.account.json.keyfile", str(storage_json_path)) \
     .getOrCreate()
 
 logger.info("SparkSession initialized")
