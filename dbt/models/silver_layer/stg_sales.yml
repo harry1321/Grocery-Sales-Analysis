@@ -1,0 +1,15 @@
+models:
+  - name: stg_sales
+    description: Contains transactional data for each sale.
+    columns:
+      - name: SalesID
+      - name: SalesPersonID
+      - name: CustomerID
+      - name: ProductID
+      - name: Quantity
+      - name: Discount
+      - name: SalesYear
+      - name: SalesMonth
+      - name: SalesDate
+      - name: SalesTime
+      - name: TransactionNumber

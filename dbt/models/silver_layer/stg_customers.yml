@@ -1,0 +1,9 @@
+models:
+  - name: stg_customers
+    description: Contains information about the customers who make purchases.
+    columns:
+      - name: CustomerID
+      - name: CustomerName
+      - name: CityName
+      - name: CountryName
+      - name: Address

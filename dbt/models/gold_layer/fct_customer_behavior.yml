@@ -1,0 +1,20 @@
+models:
+  - name: fct_customer_behavior
+    description: Explore customers' purchasing habit.
+    columns:
+      - name: CustomerID
+      - name: SalesYear
+      - name: SalesMonth
+      - name: SalesDate
+      - name: SalesHour
+      - name: CustomerName
+      - name: ProductName
+      - name: CategoryName
+      - name: CityName
+      - name: CountryName
+      - name: TotalOrders
+      - name: TotalSpent
+      - name: AverageOrderValue
+      - name: AverageBasketSize
+      - name: IsRepeatCustomer
+      - name: LastPurchaseDate

@@ -1,0 +1,48 @@
+version: 2
+
+sources:
+  - name: raw_data
+    # project ID
+    database: datacamp-nytaxi-dbt-2025
+    schema:
+      # name of dataset
+      bronze_layer
+      # loaded_at_field: record_loaded_at
+    tables:
+      - name: sales
+          # freshness:
+          # error_after: {count: 6, period: hour}
+        description: >
+          The sales.csv file contains transactional data capturing details of each sale made in the grocery sales database. 
+          This dataset is essential for analyzing sales performance, customer purchasing behavior, and revenue trends.
+        columns:
+          - name: SalesID
+            data_type: int
+            description: Unique identifier for each sale.
+          - name: SalesPersonID
+            data_type: int
+            description: Employee responsible for the sale.
+          - name: CustomerID
+            data_type: int
+            description: Customer making the purchase.
+          - name: ProductID
+            data_type: int
+            description: Product being sold.
+          - name: Quantity
+            data_type: int
+            description: Number of units sold.
+          - name: Discount
+            data_type: float
+            description: Discount applied to the sale.
+          - name: TotalPrice
+            data_type: int
+            description: Final sale price after discounts.
+          - name: SalesDate
+            data_type: datetime
+            description: Date and time of the sale.
+          - name: TransactionNumber
+            data_type: string
+            description: Unique identifier for the transaction.
+      - name: customers
+      - name: employees
+      - name: product

@@ -1,0 +1,12 @@
+models:
+  - name: stg_products
+    description: Stores details about the products being sold.
+    columns:
+      - name: ProductID
+      - name: ProductName
+      - name: Price
+      - name: CategoryName
+      - name: Class
+      - name: Resistant
+      - name: IsAllergic
+      - name: VitalityDays

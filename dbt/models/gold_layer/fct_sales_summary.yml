@@ -1,0 +1,19 @@
+models:
+  - name: fct_sales_summary
+    description: Stores details of employees handling sales transactions.
+    columns:
+      - name: SalesID
+      - name: SalesYear
+      - name: SalesMonth
+      - name: SalesDate
+      - name: SalesHour
+      - name: CustomerName
+      - name: ProductName
+      - name: CategoryName
+      - name: CityName
+      - name: CountryName
+      - name: Quantity
+      - name: Price
+      - name: Discount
+      - name: GrossRevenue
+      - name: NetRevenue
