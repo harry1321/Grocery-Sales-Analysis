@@ -20,19 +20,33 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 models:
   decamp_project:
+    +schema: grocery_data
     # Applies to all files under models/name_of_model/
     silver_layer:
-      schema: silver_layer
+      +schema: silver_layer
       materialized: view
     gold_layer:
-      schema: gold_layer
+      +schema: gold_layer
       materialized: table
 
 seeds:
   decamp_project:
+    +schema: grocery_data
     categories:
+      +column_types:
+        CategoryID: integer
+        CategoryName: string
     cities:
+      +column_types:
+        CityID: integer
+        CityName: string
+        Zipcode: float
+        CountryID: integer
     countries:
+      +column_types:
+        CountryID: integer
+        CountryName: string
+        CountryCode: string
 
 vars:
   is_test_run: false

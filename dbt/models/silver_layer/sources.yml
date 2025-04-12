@@ -6,7 +6,7 @@ sources:
     database: datacamp-nytaxi-dbt-2025
     schema:
       # name of dataset
-      bronze_layer
+      grocery_test
       # loaded_at_field: record_loaded_at
     tables:
       - name: sales
@@ -45,4 +45,4 @@ sources:
             description: Unique identifier for the transaction.
       - name: customers
       - name: employees
-      - name: product
+      - name: products

@@ -1,26 +1,28 @@
--- models/marts/fct_customer_sales_behavior.sql
+-- models/gold_layer/fct_customer_sales_behavior.sql
 
 WITH sales_data AS (
 
     SELECT
-        s.CustomerID,
-        c.FullName AS CustomerName,
-        r.CcityName AS City,
-        r.CountryName AS Country,
+        c.CustomerName,
+        c.CityName AS City,
+        c.CountryName AS Country,
         s.TransactionNumber,
-        s.TotalPrice,
         s.Quantity,
+        (s.Quantity*p.Price*s.Discount) AS TotalPrice,
+        s.Discount,
         s.SalesDate
+
     FROM {{ ref('stg_sales') }} s
-    LEFT JOIN {{ ref('stg_customers') }} c ON s.CustomerID = c.CustomerID
-    LEFT JOIN {{ ref('dim_regions') }} r ON c.CityID = ci.CityID
+    LEFT JOIN {{ ref('dim_customers') }} c 
+        ON s.CustomerID = c.CustomerID
+    LEFT JOIN {{ ref('dim_products') }} p 
+        ON p.ProductID = s.ProductID
 
 ),
 
 aggregated AS (
 
     SELECT
-        CustomerID,
         CustomerName,
         City,
         Country,
@@ -36,7 +38,7 @@ aggregated AS (
         END AS IsRepeatCustomer
 
     FROM sales_data
-    GROUP BY CustomerID, CustomerName, CountryName
+    GROUP BY CustomerName, City, Country
 
 )
 
