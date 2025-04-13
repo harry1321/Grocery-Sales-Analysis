@@ -8,6 +8,7 @@ from google.cloud import storage
 from google.cloud import bigquery
 from google.cloud.bigquery import SchemaField
 
+from helper.variables import GCP_CREDENTIALS_FILE_PATH, GCP_PROJECT_ID, BUCKET_NAME, BUCKET_CLASS, BUCKET_LOCATION
 
 class GCSTools():
     def __init__(self, credentials_file=GCP_CREDENTIALS_FILE_PATH):
