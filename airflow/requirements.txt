@@ -4,3 +4,4 @@ apache-airflow-providers-dbt-cloud==3.11.0
 apache-airflow-providers-common-compat==1.6.0
 pendulum
 requests
+kaggle
