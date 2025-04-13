@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from datetime import datetime, timedelta
 
@@ -7,6 +8,7 @@ from helper.read_load_gcs import GCSBucket, GCBigQuery
 
 from kaggle.api.kaggle_api_extended import KaggleApi
 
+os.environ['KAGGLE_CONFIG_DIR'] = "/home/airflow/.config/kaggle"
 '''
 # XCom pull file namein gcs, push file name in gcs and date
 task_check_gcs = GCSObjectExistenceSensor(
