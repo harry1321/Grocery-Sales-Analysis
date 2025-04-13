@@ -9,7 +9,7 @@ with DAG(dag_id="test_dbt_cloud",
 
     run_dbt_job = DbtCloudRunJobOperator(
         task_id='run_dbt_job',
-        job_id=123456,  # 替換為你 dbt cloud 裡的 job id
+        job_id=70403104280461,  # 替換為你 dbt cloud 裡的 job id
         account_id=70403103933537,
         dbt_cloud_conn_id='dbt_cloud',
         wait_for_termination=True
