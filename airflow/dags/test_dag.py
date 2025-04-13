@@ -1,27 +1,18 @@
-from helper.test import *
+from airflow import DAG
+from airflow.providers.dbt.cloud.operators.dbt import DbtCloudRunJobOperator
+from datetime import datetime
 
-from airflow.models import DAG
-from airflow.operators.empty import EmptyOperator
-from airflow.operators.python import PythonOperator, BranchPythonOperator
+with DAG(dag_id="test_dbt_cloud",
+         start_date=datetime(2023, 1, 1),
+         schedule_interval=None,
+         catchup=False) as dag:
 
-default_args={
-    "owner": 'Harry Yang',
-    "retries": 1,
-    "retry_delay": timedelta(minutes=1),
-}
-with DAG(
-    dag_id="test_dag",
-    default_args=default_args
-) as dag:
-    date = PythonOperator(
-        task_id="date",
-        python_callable=task_date
+    run_dbt_job = DbtCloudRunJobOperator(
+        task_id='run_dbt_job',
+        job_id=123456,  # 替換為你 dbt cloud 裡的 job id
+        account_id=70403103933537,
+        dbt_cloud_conn_id='dbt_cloud',
+        wait_for_termination=True
     )
 
-    test = PythonOperator(
-        task_id="test",
-        python_callable=testf
-    )
-
-
-date >> test 
+run_dbt_job

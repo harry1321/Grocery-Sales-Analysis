@@ -1,4 +1,6 @@
 google-cloud-bigquery==3.21.0
 google-cloud-storage==2.16.0
+apache-airflow-providers-dbt-cloud==3.11.0
+apache-airflow-providers-common-compat==1.6.0
 pendulum
 requests
