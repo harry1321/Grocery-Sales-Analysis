@@ -1,4 +1,3 @@
-from Github.Retail-Promo-Analysis.airflow.dags.helper.task_functions import task_get
 from datetime import datetime,timedelta
 
 from airflow.models import DAG
@@ -8,7 +7,7 @@ from airflow.providers.dbt.cloud.operators.dbt import DbtCloudRunJobOperator
 from airflow.utils.task_group import TaskGroup
 from airflow.operators.empty import EmptyOperator
 
-from tasks.task_functions import task_date, task_get, task_clean, task_load_gcs, task_branch, task_load_bq
+from tasks.task_functions import task_date, task_get, task_load_gcs, task_load_bq
 from tasks.variables import GCP_CREDENTIALS_FILE_PATH, GCP_PROJECT_ID, BUCKET_NAME, BUCKET_CLASS, BUCKET_LOCATION
 
 default_args={
