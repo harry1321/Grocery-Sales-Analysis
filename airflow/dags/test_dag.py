@@ -5,7 +5,7 @@ from airflow.providers.dbt.cloud.operators.dbt import DbtCloudRunJobOperator
 from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.operators.bash import BashOperator
 
-from helper.read_load_gcp import GCSBucket, GCBigQuery
+from helper.read_load_gcs import GCSBucket, GCBigQuery
 from helper.variables import GCP_CREDENTIALS_FILE_PATH, GCP_PROJECT_ID, BUCKET_NAME, BUCKET_CLASS, BUCKET_LOCATION
 from kaggle.api.kaggle_api_extended import KaggleApi
 

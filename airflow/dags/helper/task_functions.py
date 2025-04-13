@@ -3,9 +3,7 @@ from datetime import datetime, timedelta
 
 from airflow.utils.state import State
 
-from tasks.extract import GenData
-from tasks.clean_transform import CleanTool
-from tasks.read_load_gcp import GCSBucket, GCBigQuery
+from tasks.read_load_gcs import GCSBucket, GCBigQuery
 
 from kaggle.api.kaggle_api_extended import KaggleApi
 
