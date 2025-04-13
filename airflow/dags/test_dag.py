@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+os.environ['KAGGLE_CONFIG_DIR'] = "/home/airflow/.config/kaggle"
 
 from airflow import DAG
 from airflow.providers.dbt.cloud.operators.dbt import DbtCloudRunJobOperator
@@ -9,7 +10,7 @@ from airflow.operators.bash import BashOperator
 from helper.read_load_gcs import GCSBucket, GCBigQuery
 from helper.variables import GCP_CREDENTIALS_FILE_PATH, GCP_PROJECT_ID, BUCKET_NAME, BUCKET_CLASS, BUCKET_LOCATION
 from kaggle.api.kaggle_api_extended import KaggleApi
-os.environ['KAGGLE_CONFIG_DIR'] = "/home/airflow/.config/kaggle"
+
 def task_get(ti,dataset_name) -> None:
     '''
     Get data from kaggle API.
