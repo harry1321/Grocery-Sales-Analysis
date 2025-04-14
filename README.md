@@ -10,7 +10,8 @@
 [Data Pipeline Architecture](#data-pipeline-architecture) <br>
 [Running the Project](#running-the-project) •
 [Dashboard](#dashboard) • 
-[Resources](#resources) • 
+[Contact](#contact-information) • 
+[Awesome Resources](#awesome-resources) • 
 </div>
 
 ---
@@ -18,15 +19,6 @@
 This project builds a data engineering pipeline to analyze grocery sales data and produce an interactive dashboard. The dashboard enables us to explore revenue by cities, assess customer purchasing patterns, and evaluate salesperson performance to uncover key drivers behind sales trends.
 
 The Grocery Sales Dataset, sourced from Kaggle, comprises seven interconnected tables covering transactional, customer, product, and geographic data. The dataset includes detailed records of product categories, customers’ personal and location information, product attributes, employee details, and a comprehensive sales log. The data spans a four-month period and provides a rich foundation for analyzing consumer behavior, sales performance, and regional sales distribution.
-
-Diagram below shows an overview of data pipeline architecture used in this project.
-
-<p align="center">
-    <img src="/assets/architecture.png" width="60%", height="60%"
-    <em></em>
-</p>
-
-
 
 ## Problem Statement
 
@@ -132,7 +124,10 @@ For Kaggle API Key Refer [here](https://www.kaggle.com/docs/api) for instruction
     - Create a production environment and make sure to create a service token which you will need in the airflow UI connection setting.
     - You can create jobs that will be triggered by airflow and remember to copy all the jobs ID to `variables.json`
 3. Building airflow service:
-    - Once the resources are build, you need to access into the VM and run the shell script called `run_airflow.sh`
+    - Once the resources are build, you need to access into the VM and run the shell script called `run_airflow.sh` in order to install docker.
+    - After docker is installed, go to `./Retail-Promo-Analysis` and run the command below.
+        - `docker compose up airflow-init`
+        - `docker compose up -d`
     - When all containers are up and healthy, you now can visit the airflow UI from http://**your VM external IP**:8080.
     - Go to the variables setting in airflow UI, and upload the `variables.json` under airflow directory.
     - Go to the connection setting in airflow UI, and in here you need to add a connection to your DBT cloud. For more instructions go to [Guides to Airflow and dbt Cloud](https://docs.getdbt.com/guides/airflow-and-dbt-cloud?step=1)
