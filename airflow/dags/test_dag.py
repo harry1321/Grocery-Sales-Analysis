@@ -5,9 +5,10 @@ from airflow import DAG
 from airflow.providers.dbt.cloud.operators.dbt import DbtCloudRunJobOperator
 from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.operators.bash import BashOperator
-
+from google.cloud import bigquery
 from helper.read_load_gcs import GCSBucket, GCBigQuery
 from helper.variables import GCP_CREDENTIALS_FILE_PATH, GCP_PROJECT_ID, BUCKET_NAME, BUCKET_CLASS, BUCKET_LOCATION
+from helper.grocery_schema import dataset_schema
 
 def task_get(ti, dataset_name='andrexibiza/grocery-sales-dataset') -> None:
     '''
@@ -48,6 +49,28 @@ def task_load_gcs(ti) -> None:
     shutil.rmtree(folder_path)
     print("下載的資料已清理。")
 
+def task_check_gcs(ti) -> None:
+    '''
+    Check target data exsist in GCS or not.
+    '''
+    temp = ti.xcom_pull(task_ids="get")
+    check_list = temp.get("file_names")
+
+    gcs = GCSBucket()
+    for item in check_list:
+        gcs.check(blob_name=f"raw/{item}")
+
+def task_load_bq(service:str, dataset_name:str, job_config, ti) -> None:
+    '''
+
+    '''
+    temp = ti.xcom_pull(task_ids="get")
+    check_list = temp.get("file_names")
+    gbq = GCBigQuery(dataset_name)
+    blob_name = f"raw/{service}.csv"
+    table_name = service
+    gbq.load_from_blob(blob_name, table_name, job_config)
+
 with DAG(dag_id="test",
          start_date=datetime(2023, 1, 1),
          schedule_interval=None,
@@ -58,8 +81,26 @@ with DAG(dag_id="test",
     )
     load_gcs = PythonOperator(
         task_id="load_gcs_processed",
-        python_callable=task_load_gcs,
-        op_kwargs={"data_state":"processed"}
+        python_callable=task_load_gcs
+    )
+    check_gcs = PythonOperator(
+        task_id="check_gcs",
+        python_callable=task_check_gcs
+    )
+    load_bq = PythonOperator(
+        task_id="load_bq",
+        python_callable=task_load_bq,
+        op_kwargs={
+            "service":"sales", 
+            "dataset_name":"test", 
+            "job_config":bigquery.LoadJobConfig(
+                        source_format=bigquery.SourceFormat.CSV,
+                        skip_leading_rows=1,
+                        schema=dataset_schema["sales"],
+                        create_disposition="CREATE_IF_NEEDED",
+                        write_disposition="WRITE_APPEND"
+            )
+        }
     )
     # run_dbt_job = DbtCloudRunJobOperator(
     #     task_id='run_dbt_job',
@@ -69,4 +110,4 @@ with DAG(dag_id="test",
     #     wait_for_termination=True
     # )
 
-get >> load_gcs
+get >> load_gcs >> check_gcs >> load_bq

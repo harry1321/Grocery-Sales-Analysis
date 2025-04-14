@@ -7,8 +7,11 @@ from airflow.providers.dbt.cloud.operators.dbt import DbtCloudRunJobOperator
 from airflow.utils.task_group import TaskGroup
 from airflow.operators.empty import EmptyOperator
 
+from google.cloud import bigquery
+
 from helper.task_functions import task_date, task_get, task_load_gcs, task_load_bq
 from helper.variables import GCP_CREDENTIALS_FILE_PATH, GCP_PROJECT_ID, BUCKET_NAME, BUCKET_CLASS, BUCKET_LOCATION
+from helper.grocery_schema import dataset_schema
 
 default_args={
     "owner": 'Harry Yang',
@@ -73,7 +76,17 @@ with dag:
     load_bq = PythonOperator(
         task_id="load_bq",
         python_callable=task_load_bq,
-        op_kwargs={"dataset_name":"test", "table_name":"test", "bucket_name":f"{BUCKET_NAME}"}
+        op_kwargs={
+            "service":"sales", 
+            "dataset_name":"test", 
+            "job_config":bigquery.LoadJobConfig(
+                        source_format=bigquery.SourceFormat.CSV,
+                        skip_leading_rows=1,
+                        schema=dataset_schema["sales"],
+                        create_disposition="CREATE_IF_NEEDED",
+                        write_disposition="WRITE_APPEND"
+            )
+        }
     )
 
     check_dbt_con = DbtCloudRunJobOperator(

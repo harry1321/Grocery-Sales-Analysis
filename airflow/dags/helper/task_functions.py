@@ -52,6 +52,9 @@ def task_get(ti,dataset_name='andrexibiza/grocery-sales-dataset') -> None:
     print(f"正在下載 Kaggle 資料集：{dataset_name}...")
     api.dataset_download_files(dataset_name, path=folder_path, unzip=True)
     print("Kaggle 資料集下載完成！")
+    file_names = os.listdir(folder_path)
+    file_names = [f for f in file_names if os.path.isfile(os.path.join(folder_path, f))]
+    return {'check_list': file_names}
 
 def task_load_gcs(ti) -> None:
     folder_path = '/opt/airflow/tmp'
@@ -71,25 +74,27 @@ def task_load_gcs(ti) -> None:
 #         print(f"Did not pass data quality test with data error ratio {temp.get('error_ratio')}")
 #         return f"{success_route}"
 
-def task_check_gcs(data_state, ti) -> None:
+def task_check_gcs(ti) -> None:
     '''
     Check target data exsist in GCS or not.
     '''
-    temp = ti.xcom_pull(task_ids="date")
-    date = temp.get("date")
-    check_list = [f"{date}_flow_vd_5min.csv", f"{date}_speed_vd_5min.csv", f"{date}_occ_vd_5min.csv"]
+    temp = ti.xcom_pull(task_ids="get")
+    check_list = temp.get("file_names")
+
     gcs = GCSBucket()
     for item in check_list:
-        gcs.check(blob_name=f"{data_state}/{date}/{item}")
+        gcs.check(blob_name=f"raw/{item}")
 
-def task_load_bq(dataset_name, table_name, bucket_name, ti) -> None:
+def task_load_bq(service:str, dataset_name:str, job_config, ti) -> None:
     '''
 
     '''
-    temp = ti.xcom_pull(task_ids="date")
-    date = temp.get("date")
+    temp = ti.xcom_pull(task_ids="get")
+    check_list = temp.get("file_names")
     gbq = GCBigQuery(dataset_name)
-    gbq.load_from_bucket(table_name=table_name, bucket_name=bucket_name, prefix=f"processed/{date}/")
+    blob_name = f"raw/{service}.csv"
+    table_name = service
+    gbq.load_from_blob(blob_name, table_name, job_config)
 
 def task_check_gcs(data_state, ti) -> None:
     '''

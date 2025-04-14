@@ -115,47 +115,16 @@ class GCBigQuery():
         self.bq_client = bigquery.Client.from_service_account_json(credentials_file)
         self.dataset_name = dataset_name
     
-    def load_from_bucket(self, table_name, bucket_name, prefix):
-        temp_gcs = GCSBucket(bucket_name)
-        result_df = pd.DataFrame()
-        blobs = temp_gcs.list_files(prefix=prefix, suffix='.csv')
+    def load_from_blob(self, blob_name, table_name, job_config, bucket_name=BUCKET_NAME):
+        blob = f"gs://{GCP_PROJECT_ID}.{bucket_name}/{blob_name}"
+        table_name = f"{GCP_PROJECT_ID}.{self.dataset_name}.{table_name}"
 
-        for blob in blobs:
-            temp = pd.read_csv(f"gs://{temp_gcs.bucket_name}/{blob}", encoding = 'big5', storage_options={"token": GCP_CREDENTIALS_FILE_PATH})
-            temp = pd.melt(temp, id_vars=temp.columns.tolist()[0], value_vars=temp.columns.tolist()[1:], var_name="vd", value_name=blob.split('_')[1])
-            try:
-                result_df = pd.merge(result_df, temp , on=temp.columns.tolist()[0:2], how="outer")
-            except KeyError:
-                result_df = temp
-                continue
-
-        job_config = bigquery.LoadJobConfig(
-                    source_format=bigquery.SourceFormat.CSV,
-                    skip_leading_rows=1,
-                    schema=SCHEMA,
-                    create_disposition="CREATE_IF_NEEDED",
-                    write_disposition="WRITE_APPEND",
-                    time_partitioning=bigquery.TimePartitioning(field="time"),
-                    clustering_fields=["vd"]
-                )
-        job = self.bq_client.load_table_from_dataframe(
-            result_df, f"{GCP_PROJECT_ID}.{self.dataset_name}.{table_name}", job_config=job_config
-        )
-        job.result()
-
-        if job.done():
-            print(f"Total files of {len(blobs)} in {temp_gcs.bucket_name}/{prefix} successfully uploaded to {self.dataset_name}.{table_name}")
-        
-        """
-        # load from google storage
         job = self.bq_client.load_table_from_uri(
-            blob.name, f"{self.dataset_name}.{table_name}", job_config=job_config
+            blob, 
+            destination=table_name, 
+            job_config=job_config
         )
         job.result()
-
-        if job.Done:
-            print(f"File {blob.name} successfully uploaded to {self.dataset_name}.{table_name}")
-        """
 
     def generate_bigquery_schema(self,df: pd.DataFrame):
         # https://medium.com/@danilo.drobac/auto-generate-bigquery-schema-from-a-pandas-dataframe-603f09ecad8b
@@ -189,49 +158,6 @@ class GCBigQuery():
                 )
             )
         return schema
-
-    # def standard_query(self, start_date, end_date, weekdays=None, stime=None, etime=None, locations=None, table_name='test') -> str:
-    #     start_date = datetime.strptime(start_date,"%Y-%m-%d")
-    #     end_date = datetime.strptime(end_date,"%Y-%m-%d")
-    #     clause=f"WHERE V.D >= '{start_date}' AND V.D <= '{end_date}'"
-    #     if isinstance(weekdays,list):
-    #         if len(weekdays) > 1:
-    #             sub_clause = ""
-    #             for w in weekdays[:-1]:
-    #                 sub_clause += f" V.W = {w} OR"
-    #             sub_clause += f" V.W = {weekdays[-1]}"
-    #             clause += f" AND ({sub_clause})"
-    #         else:
-    #             clause += f" AND (V.W = '{weekdays[0]}')"
-    #     if isinstance(stime,str):
-    #         clause += f" AND V.H >= '{stime}'"
-    #     if isinstance(etime,str):
-    #         clause += f" AND V.H <= '{etime}'"
-    #     if isinstance(locations,list):
-    #         if len(locations) > 1:
-    #             sub_clause = ""
-    #             for l in locations[:-1]:
-    #                 sub_clause += f"'{l}', "
-    #             sub_clause += f"'{locations[-1]}'"
-    #             clause += f" AND (V.vd IN ({sub_clause}))"
-    #         else:
-    #             clause += f" AND (V.vd = '{locations[0]}')"
-            
-    #     clause=clause+" ORDER BY V.time_tz"
-    #     sql = f"""
-    #         WITH V AS(
-    #         SELECT *, STRING(time, "Asia/Taipei") AS time_tz, DATETIME(time, "Asia/Taipei") AS D, MOD(EXTRACT(DAYOFWEEK FROM DATETIME(time, "Asia/Taipei"))+5, 7) AS W, TIME(time, "Asia/Taipei") AS H
-    #         FROM {GCP_PROJECT_ID}.{self.dataset_name}.{table_name}
-    #         )
-    #         SELECT time_tz, V.vd, V.volume, V.speed, V.occupancy FROM V
-    #         {clause}
-    #     """
-    #     return sql
-
-    # def query(self, sql) -> pd.DataFrame:
-    #     query_job = self.bq_client.query(sql)
-    #     query_result = query_job.to_dataframe()
-    #     return query_result
 
 # map time interval to timestamp (specify time zone)
 """
