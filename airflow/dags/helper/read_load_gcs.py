@@ -123,7 +123,8 @@ class GCBigQuery():
             return True
         except Exception as e:
             if e.code == 404:
-                return False
+                print(f"Dataset '{self.dataset_id}' 不存在，嘗試創建...")
+                self._create_dataset()
             else:
                 raise
     
@@ -141,10 +142,7 @@ class GCBigQuery():
     def load_from_blob(self, blob_name, table_name, job_config, bucket_name=BUCKET_NAME):
         blob = f"gs://{GCP_PROJECT_ID}.{bucket_name}/{blob_name}"
         table_name = f"{GCP_PROJECT_ID}.{self.dataset_id}.{table_name}"
-        
-        if not self._check_dataset_exists():
-            print(f"Dataset '{self.dataset_id}' 不存在，嘗試創建...")
-            self._create_dataset()
+        self._check_dataset_exists()
         
         job = self.bq_client.load_table_from_uri(
             blob, 
