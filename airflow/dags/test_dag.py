@@ -39,12 +39,13 @@ def task_get(ti, dataset_name='andrexibiza/grocery-sales-dataset') -> None:
     print("Kaggle 資料集下載完成！")
 
 
-def task_load_gcs(data_state,ti) -> None:
+def task_load_gcs(ti) -> None:
+    folder_path = '/opt/airflow/tmp'
     gcs = GCSBucket()
-    gcs.upload_directory(source_directory=f"/opt/airflow/data/", prefix=f"raw")
+    gcs.upload_directory(source_directory=folder_path, prefix=f"raw")
     # 清理下載的資料夾 (可選)
     import shutil
-    shutil.rmtree('/opt/airflow/data/')
+    shutil.rmtree(folder_path)
     print("下載的資料已清理。")
 
 with DAG(dag_id="test",
