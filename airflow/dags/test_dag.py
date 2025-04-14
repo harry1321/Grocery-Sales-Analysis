@@ -38,6 +38,9 @@ def task_get(ti, dataset_name='andrexibiza/grocery-sales-dataset') -> None:
     print(f"正在下載 Kaggle 資料集：{dataset_name}...")
     api.dataset_download_files(dataset_name, path=folder_path, unzip=True)
     print("Kaggle 資料集下載完成！")
+    file_names = os.listdir(folder_path)
+    file_names = [f for f in file_names if os.path.isfile(os.path.join(folder_path, f))]
+    return {'check_list': file_names}
 
 
 def task_load_gcs(ti) -> None:
