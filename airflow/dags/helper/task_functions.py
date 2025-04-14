@@ -6,19 +6,8 @@ from airflow.utils.state import State
 
 from helper.read_load_gcs import GCSBucket, GCBigQuery
 
-'''
-# XCom pull file namein gcs, push file name in gcs and date
-task_check_gcs = GCSObjectExistenceSensor(
-    bucket=BUCKET_NAME,
-    object=PATH_TO_UPLOAD_FILE,
-    mode='poke',
-    soft_fail=True,
-    task_id="task_check_gcs"
-)
-'''
-
 def task_date(**kwargs):
-    # 以2021/05/30為例 格式為 date="20210530"
+    # Take 2021/05/30 as example the format should be date="20210530"
     execute_date = kwargs['logical_date']
     execute_date = execute_date.strftime('%Y%m%d')
     return {'date':"20240416"}
@@ -28,30 +17,27 @@ def task_get(ti,dataset_name='andrexibiza/grocery-sales-dataset') -> None:
     '''
     Get data from kaggle API.
     '''
+
+    # Get kaggle crdentials
     import os
     import json
     from kaggle.api.kaggle_api_extended import KaggleApi
-
     kaggle_config_path = "/opt/airflow/dags/.kaggle/kaggle.json"
-
     if not os.path.exists(kaggle_config_path):
         raise FileNotFoundError(f"Kaggle config not found at {kaggle_config_path}")
-
     with open(kaggle_config_path) as f:
         creds = json.load(f)
-
     os.environ["KAGGLE_USERNAME"] = creds["username"]
     os.environ["KAGGLE_KEY"] = creds["key"]
-
     folder_path = '/opt/airflow/tmp'
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
     
     api = KaggleApi()
     api.authenticate()
-    print(f"正在下載 Kaggle 資料集：{dataset_name}...")
+    print(f"Downloading data from Kaggle：{dataset_name}...")
     api.dataset_download_files(dataset_name, path=folder_path, unzip=True)
-    print("Kaggle 資料集下載完成！")
+    print("Kaggle dataset download completed！")
     file_names = os.listdir(folder_path)
     file_names = [f for f in file_names if os.path.isfile(os.path.join(folder_path, f))]
     return {'check_list': file_names}
@@ -60,10 +46,10 @@ def task_load_gcs(ti) -> None:
     folder_path = '/opt/airflow/tmp'
     gcs = GCSBucket()
     gcs.upload_directory(source_directory=folder_path, prefix=f"raw")
-    # 清理下載的資料夾 (可選)
+    # Clean up the tmp folder
     import shutil
     shutil.rmtree(folder_path)
-    print("下載的資料已清理。")
+    print("Removed all files in tmp.")
 
 # def task_branch(success_route, failed_route, ti) -> None:
 #     temp = ti.xcom_pull(task_ids="clean")
@@ -87,10 +73,8 @@ def task_check_gcs(ti) -> None:
 
 def task_load_bq(service:str, dataset_name:str, job_config, ti) -> None:
     '''
-
+    Load categories.csv, cusomers.csv, employees.csv & products.csv to GCS for DBT modeling.
     '''
-    temp = ti.xcom_pull(task_ids="get")
-    check_list = temp.get("file_names")
     gbq = GCBigQuery(dataset_name)
     blob_name = f"raw/{service}.csv"
     table_name = service
