@@ -1,4 +1,7 @@
 # Retail Sales Data Engineering Pipeline
+
+---
+
 <div align="center">
 
 [Problem Statement](#problem-statement) •
@@ -19,7 +22,7 @@ The Grocery Sales Dataset, sourced from Kaggle, comprises seven interconnected t
 Diagram below shows an overview of data pipeline architecture used in this project.
 
 <p align="center">
-    <img src="/assets/workflow_dag.png" width="60%", height="60%"
+    <img src="/assets/architecture.png" width="60%", height="60%"
     <em></em>
 </p>
 
@@ -69,6 +72,9 @@ This pipeline contains the following parts of precessing data:
 To summarize here is a snapshot from Airflow web UI to show how these job are arranged.
 ![architecture.png](/assets/workflow_dag.png)
 
+And this is a lineage describing how models are built in DBT.
+![lineage.png](/assets/lineage.png)
+
 ## Running the Project
 
 ### Prerequisites
@@ -82,7 +88,9 @@ To summarize here is a snapshot from Airflow web UI to show how these job are ar
 - Edit variables.json to ensure your cloud resource name are all set up properly.
 
 ```
-For GCP Credentials API Key you can refer [here](https://cloud.google.com/docs/authentication/api-keys#create) for instructions. Ensure proper IAM role was given to the user.
+For GCP Credentials you can refer [here](https://cloud.google.com/docs/authentication/api-keys#create) for instructions. 
+Ensure proper IAM role was given to the user.
+
 For Kaggle API Key Refer [here](https://www.kaggle.com/docs/api) for instructions. 
 ```
 
@@ -134,6 +142,7 @@ For Kaggle API Key Refer [here](https://www.kaggle.com/docs/api) for instruction
     - Visit [Looker Studio](https://lookerstudio.google.com/) and start to build your dashboard.
 
 ## Dashboard
+You can access this dashboard from [here](https://lookerstudio.google.com/s/jEFS_2hqVB0).
 
 <p align="center">
     <img src="/assets/dashboard_snap.png" width="60%", height="60%">
