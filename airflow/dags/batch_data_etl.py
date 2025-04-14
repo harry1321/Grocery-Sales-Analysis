@@ -101,23 +101,23 @@ with dag:
         task_id='hold'
     )
     """
-    with TaskGroup('gold_layer') as modeling_data :
-        models = [
-            'crm_cust_info',
-            'crm_prd_info',
-            'crm_salse_details',
-            'erp_cust',
-            'erp_customer_loc',
-            'ERP_PX_CAT'
-        ]
-        dbt_tasks = []
-        for model in models:
-            dbt_task = DbtCloudRunJobOperator(
-                            task_id=f'{model}',
-                            job_id= dbt_jobs[f'{model}'], # 替換為你 dbt cloud 裡的 job id
-                            account_id= DBT_ACCOUNT_ID, # 70471823453880
-                            dbt_cloud_conn_id=DBT_CONN_ID, #'dbt_cloud'
-                            wait_for_termination=True
-                        )
+    # with TaskGroup('gold_layer') as modeling_data :
+    #     models = [
+    #         'crm_cust_info',
+    #         'crm_prd_info',
+    #         'crm_salse_details',
+    #         'erp_cust',
+    #         'erp_customer_loc',
+    #         'ERP_PX_CAT'
+    #     ]
+    #     dbt_tasks = []
+    #     for model in models:
+    #         dbt_task = DbtCloudRunJobOperator(
+    #                         task_id=f'{model}',
+    #                         job_id= dbt_jobs[f'{model}'], # 替換為你 dbt cloud 裡的 job id
+    #                         account_id= DBT_ACCOUNT_ID, # 70471823453880
+    #                         dbt_cloud_conn_id=DBT_CONN_ID, #'dbt_cloud'
+    #                         wait_for_termination=True
+    #                     )
 #date >> gen >> clean >> branch >> [end, hold]
 date >> get >> load_gcs_processed >> load_bq
