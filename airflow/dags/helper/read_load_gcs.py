@@ -140,7 +140,7 @@ class GCBigQuery():
             raise
 
     def load_from_blob(self, blob_name, table_name, job_config, bucket_name=BUCKET_NAME):
-        blob = f"gs://{GCP_PROJECT_ID}.{bucket_name}/{blob_name}"
+        blob = f"gs://{bucket_name}/{blob_name}"
         table_name = f"{GCP_PROJECT_ID}.{self.dataset_id}.{table_name}"
         self._check_dataset_exists()
         
