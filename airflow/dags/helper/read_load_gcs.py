@@ -113,12 +113,39 @@ class GCSBucket(GCSTools):
 class GCBigQuery():
     def __init__(self, dataset_name, credentials_file=GCP_CREDENTIALS_FILE_PATH):
         self.bq_client = bigquery.Client.from_service_account_json(credentials_file)
-        self.dataset_name = dataset_name
+        self.dataset_id = dataset_name
     
+    def _check_dataset_exists(self):
+        """檢查 BigQuery 中是否存在指定的 dataset。"""
+        dataset_ref = self.bq_client.dataset(self.dataset_id)
+        try:
+            self.bq_client.get_dataset(dataset_ref)
+            return True
+        except Exception as e:
+            if e.code == 404:
+                return False
+            else:
+                raise
+    
+    def _create_dataset(self):
+        """在 BigQuery 中創建指定的 dataset。"""
+        dataset_ref = self.bq_client.dataset(self.dataset_id)
+        dataset = bigquery.Dataset(dataset_ref)
+        try:
+            self.bq_client.create_dataset(dataset)
+            print(f"Dataset '{self.dataset_id}' 已成功創建。")
+        except Exception as e:
+            print(f"創建 dataset '{self.dataset_id}' 時發生錯誤: {e}")
+            raise
+
     def load_from_blob(self, blob_name, table_name, job_config, bucket_name=BUCKET_NAME):
         blob = f"gs://{GCP_PROJECT_ID}.{bucket_name}/{blob_name}"
-        table_name = f"{GCP_PROJECT_ID}.{self.dataset_name}.{table_name}"
-
+        table_name = f"{GCP_PROJECT_ID}.{self.dataset_id}.{table_name}"
+        
+        if not self._check_dataset_exists(self.dataset_id):
+            print(f"Dataset '{self.dataset_id}' 不存在，嘗試創建...")
+            self._create_dataset(self.dataset_id)
+        
         job = self.bq_client.load_table_from_uri(
             blob, 
             destination=table_name, 
