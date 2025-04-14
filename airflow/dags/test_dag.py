@@ -113,4 +113,4 @@ with DAG(dag_id="test",
     #     wait_for_termination=True
     # )
 
-load_bq
+get >> load_gcs >> check_gcs >> load_bq
