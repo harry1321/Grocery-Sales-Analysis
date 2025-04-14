@@ -2,7 +2,7 @@ from google.cloud import bigquery
 from google.cloud.bigquery import SchemaField
 
 dataset_schema = {}
-sales_dtypes = {
+sales = {
     'SalesID': 'INTEGER',
     'SalesPersonID': 'INTEGER',
     'CustomerID': 'INTEGER',
@@ -14,12 +14,12 @@ sales_dtypes = {
     'TransactionNumber': 'STRING'
 }
 schema = []
-for k,v in sales_dtypes.items():
+for k,v in sales.items():
     schema.append(bigquery.SchemaField(k,v))
 dataset_schema['sales'] = schema
 
 
-customers_dtypes = {
+customers = {
     'CustomerID': 'INTEGER',
     'FirstName': 'STRING',
     'MiddleInitial': 'STRING',
@@ -28,11 +28,11 @@ customers_dtypes = {
     'Address': 'STRING'
 }
 schema = []
-for k,v in customers_dtypes.items():
+for k,v in customers.items():
     schema.append(bigquery.SchemaField(k,v))
 dataset_schema['customers'] = schema
 
-employees_dtypes = {
+employees = {
     'EmployeeID': 'INTEGER',
     'FirstName': 'STRING',
     'MiddleInitial': 'STRING',
@@ -43,11 +43,11 @@ employees_dtypes = {
     'HireDate': 'TIMESTAMP'
 }
 schema = []
-for k,v in employees_dtypes.items():
+for k,v in employees.items():
     schema.append(bigquery.SchemaField(k,v))
 dataset_schema['employees'] = schema
 
-products_dtypes = {
+products = {
     'ProductID': 'INTEGER',
     'ProductName': 'STRING',
     'Price': 'FLOAT',
@@ -59,36 +59,36 @@ products_dtypes = {
     'VitalityDays': 'FLOAT'
 }
 schema = []
-for k,v in products_dtypes.items():
+for k,v in products.items():
     schema.append(bigquery.SchemaField(k,v))
 dataset_schema['products'] = schema
 
-categories_dtypes = {
+categories = {
     'CategoryID': 'INTEGER',
     'CategoryName': 'STRING'
 }
 schema = []
-for k,v in categories_dtypes.items():
+for k,v in categories.items():
     schema.append(bigquery.SchemaField(k,v))
 dataset_schema['categories'] = schema
 
-cities_dtypes = {
+cities = {
     'CityID': 'INTEGER',
     'CityName': 'STRING',
     'Zipcode': 'INTEGER',
     'CountryID': 'INTEGER'
 }
 schema = []
-for k,v in cities_dtypes.items():
+for k,v in cities.items():
     schema.append(bigquery.SchemaField(k,v))
 dataset_schema['cities'] = schema
 
-countries_dtypes = {
+countries = {
     'CountryID': 'INTEGER',
     'CountryName': 'STRING',
     'CountryCode': 'STRING'
 }
 schema = []
-for k,v in countries_dtypes.items():
+for k,v in countries.items():
     schema.append(bigquery.SchemaField(k,v))
 dataset_schema['countries'] = schema

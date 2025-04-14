@@ -58,7 +58,7 @@ with dag:
     with TaskGroup('Load_to_GBQ') as load_gbq:
         services = [
             "categories", 
-            "cusomers", 
+            "customers", 
             "employees",
             "products"
         ]
