@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-os.environ['KAGGLE_CONFIG_DIR'] = "/home/airflow/.config/kaggle"
 
 from airflow import DAG
 from airflow.providers.dbt.cloud.operators.dbt import DbtCloudRunJobOperator
@@ -9,17 +8,32 @@ from airflow.operators.bash import BashOperator
 
 from helper.read_load_gcs import GCSBucket, GCBigQuery
 from helper.variables import GCP_CREDENTIALS_FILE_PATH, GCP_PROJECT_ID, BUCKET_NAME, BUCKET_CLASS, BUCKET_LOCATION
-from kaggle.api.kaggle_api_extended import KaggleApi
 
-def task_get(ti,dataset_name) -> None:
+def task_get(ti, dataset_name='andrexibiza/grocery-sales-dataset') -> None:
     '''
     Get data from kaggle API.
     '''
+    import os
+    import json
+    from kaggle.api.kaggle_api_extended import KaggleApi
+
+    kaggle_config_path = "/opt/airflow/dags/.kaggle/kaggle.json"
+
+    if not os.path.exists(kaggle_config_path):
+        raise FileNotFoundError(f"Kaggle config not found at {kaggle_config_path}")
+
+    with open(kaggle_config_path) as f:
+        creds = json.load(f)
+
+    os.environ["KAGGLE_USERNAME"] = creds["username"]
+    os.environ["KAGGLE_KEY"] = creds["key"]
+
     api = KaggleApi()
     api.authenticate()
     print(f"正在下載 Kaggle 資料集：{dataset_name}...")
     api.dataset_download_files(dataset_name, path='/opt/airflow/data/', unzip=True)
     print("Kaggle 資料集下載完成！")
+
 
 def task_load_gcs(data_state,ti) -> None:
     gcs = GCSBucket()
@@ -37,7 +51,7 @@ with DAG(dag_id="test",
         task_id="get",
         python_callable=task_get
     )
-    load_gcs_processed = PythonOperator(
+    load_gcs = PythonOperator(
         task_id="load_gcs_processed",
         python_callable=task_load_gcs,
         op_kwargs={"data_state":"processed"}
@@ -50,4 +64,4 @@ with DAG(dag_id="test",
     #     wait_for_termination=True
     # )
 
-task_get >> task_load_gcs
+get >> load_gcs

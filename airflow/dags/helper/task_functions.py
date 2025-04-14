@@ -2,13 +2,9 @@ import os
 from pathlib import Path
 from datetime import datetime, timedelta
 
-os.environ['KAGGLE_CONFIG_DIR'] = "/home/airflow/.config/kaggle"
-
 from airflow.utils.state import State
 
 from helper.read_load_gcs import GCSBucket, GCBigQuery
-
-from kaggle.api.kaggle_api_extended import KaggleApi
 
 '''
 # XCom pull file namein gcs, push file name in gcs and date
@@ -28,10 +24,25 @@ def task_date(**kwargs):
     return {'date':"20240416"}
 
 
-def task_get(ti,dataset_name) -> None:
+def task_get(ti,dataset_name='andrexibiza/grocery-sales-dataset') -> None:
     '''
     Get data from kaggle API.
     '''
+    import os
+    import json
+    from kaggle.api.kaggle_api_extended import KaggleApi
+
+    kaggle_config_path = "/opt/airflow/dags/.kaggle/kaggle.json"
+
+    if not os.path.exists(kaggle_config_path):
+        raise FileNotFoundError(f"Kaggle config not found at {kaggle_config_path}")
+
+    with open(kaggle_config_path) as f:
+        creds = json.load(f)
+
+    os.environ["KAGGLE_USERNAME"] = creds["username"]
+    os.environ["KAGGLE_KEY"] = creds["key"]
+
     api = KaggleApi()
     api.authenticate()
     print(f"正在下載 Kaggle 資料集：{dataset_name}...")
