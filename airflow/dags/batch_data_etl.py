@@ -24,6 +24,12 @@ default_args={
     "retry_delay": timedelta(minutes=1),
 }
 
+DBT_ACCOUNT_ID = 70471823453880
+DBT_CONN_ID = 'dbt_cloud'
+dbt_jobs = {
+    'check_dbt_con':70471823453361,
+    'create_dbt_seed':70471823453361
+}
 dag = DAG(
     dag_id="batch_data_etl",
     default_args=default_args,
@@ -73,14 +79,6 @@ with dag:
     check_dbt_con = DbtCloudRunJobOperator(
         task_id='check_dbt_con',
         job_id= dbt_jobs['check_dbt_con'], # 替換為你 dbt cloud 裡的 job id
-        account_id= DBT_ACCOUNT_ID, # 70471823453880
-        dbt_cloud_conn_id=DBT_CONN_ID, #'dbt_cloud'
-        wait_for_termination=True
-    )
-
-    create_dbt_seed = DbtCloudRunJobOperator(
-        task_id='create_dbt_seed',
-        job_id= dbt_jobs['create_dbt_seed'], # 替換為你 dbt cloud 裡的 job id
         account_id= DBT_ACCOUNT_ID, # 70471823453880
         dbt_cloud_conn_id=DBT_CONN_ID, #'dbt_cloud'
         wait_for_termination=True
