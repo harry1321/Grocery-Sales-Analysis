@@ -7,17 +7,14 @@
   "GCP_PROJECT_ID": "datacamp-nytaxi-dbt-2025",
   "DBT_ACCOUNT_ID": 70471823453880,
   "DBT_CONN_ID": "dbt_cloud",
-  "DBT_JOBS_CONFIG": 
+  "DBT_JOBS_ID": 
   {
-    "DBT_JOBS_ID":
-    {
-        "check_dbt_con": 70471823453400,
-        "create_dbt_seed": 70471823453361,
-        "build_stg_models": 70471823453598,
-        "build_dim_models": 70471823453599,
-        "build_fct_sales_summary": 70471823453607,
-        "build_fct_employee_performance": 70471823453606,
-        "build_fct_customer_behavior": 70471823453601
-    }
+    "check_dbt_con": 70471823453400,
+    "create_dbt_seed": 70471823453361,
+    "build_stg_models": 70471823453598,
+    "build_dim_models": 70471823453599,
+    "build_fct_sales_summary": 70471823453607,
+    "build_fct_employee_performance": 70471823453606,
+    "build_fct_customer_behavior": 70471823453601
   }
 }

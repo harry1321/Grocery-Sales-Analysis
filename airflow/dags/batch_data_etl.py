@@ -12,7 +12,7 @@ from google.cloud import bigquery
 from helper.task_functions import task_date, task_get, task_load_gcs, task_check_gcs, task_load_bq
 from helper.variables import GCP_CREDENTIALS_FILE_PATH, GCP_PROJECT_ID
 from helper.variables import BUCKET_NAME, BUCKET_CLASS, BUCKET_LOCATION, DATASET_NAME
-from helper.variables import DBT_ACCOUNT_ID, DBT_CONN_ID, DBT_JOBS_CONFIG
+from helper.variables import DBT_ACCOUNT_ID, DBT_CONN_ID, DBT_JOBS_ID
 
 # Import your data schema
 from helper.grocery_schema import dataset_schema
@@ -81,7 +81,7 @@ with dag:
 
     check_dbt_con = DbtCloudRunJobOperator(
         task_id='check_dbt_con',
-        job_id= DBT_JOBS_CONFIG['DBT_JOBS_ID']['check_dbt_con'],
+        job_id= DBT_JOBS_ID['check_dbt_con'],
         account_id= DBT_ACCOUNT_ID,
         dbt_cloud_conn_id=DBT_CONN_ID,
         wait_for_termination=True
@@ -89,7 +89,7 @@ with dag:
 
     create_dbt_seed = DbtCloudRunJobOperator(
         task_id='create_dbt_seed',
-        job_id= DBT_JOBS_CONFIG['DBT_JOBS_ID']['create_dbt_seed'],
+        job_id= DBT_JOBS_ID['create_dbt_seed'],
         account_id= DBT_ACCOUNT_ID,
         dbt_cloud_conn_id=DBT_CONN_ID,
         wait_for_termination=True
@@ -103,7 +103,7 @@ with dag:
         for model in models:
             DbtCloudRunJobOperator(
                 task_id=f'{model}',
-                job_id= DBT_JOBS_CONFIG['DBT_JOBS_ID'][f'{model}'],
+                job_id= DBT_JOBS_ID[f'{model}'],
                 account_id= DBT_ACCOUNT_ID,
                 dbt_cloud_conn_id=DBT_CONN_ID,
                 wait_for_termination=True
@@ -118,7 +118,7 @@ with dag:
         for model in models:
             DbtCloudRunJobOperator(
                 task_id=f'{model}',
-                job_id= DBT_JOBS_CONFIG['DBT_JOBS_ID'][f'{model}'],
+                job_id= DBT_JOBS_ID[f'{model}'],
                 account_id= DBT_ACCOUNT_ID,
                 dbt_cloud_conn_id=DBT_CONN_ID,
                 wait_for_termination=True
