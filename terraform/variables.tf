@@ -19,5 +19,5 @@ variable "zone" {
 
 variable "credential" {
   description = "Path of credential file"
-  default     = "../configs/credential/decamp_project_terraform.json"
+  default     = "../secrets/gce_terraform.json"
 }
