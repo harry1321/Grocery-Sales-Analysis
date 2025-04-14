@@ -1,5 +1,5 @@
 models:
-  - name: stg_customers
+  - name: dim_customers
     description: Contains information about the customers who make purchases.
     columns:
       - name: CustomerID
