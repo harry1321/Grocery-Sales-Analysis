@@ -80,34 +80,6 @@ def task_load_bq(service:str, dataset_name:str, job_config, ti) -> None:
     table_name = service
     gbq.load_from_blob(blob_name, table_name, job_config)
 
-def task_check_gcs(data_state, ti) -> None:
-    '''
-    Check target table exsist in GBQ or not.
-    '''
-
-def task_dbt_source_freshness(ti) -> None:
-    '''
-    Check data freshness, if no new data is added then do nothing.
-    '''
-
-
-def task_dbt_seed(ti) -> None:
-    '''
-    Create table from seeds data.
-    '''
-
-def task_dbt_build_all(ti) -> None:
-    '''
-    Build all models.
-    '''
-    pass
-
-def task_dbt_build_gold(ti) -> None:
-    '''
-    Build models that are relative to gold layer tables.
-    '''
-    pass
-
 """
 def task_branch(upstream_task, success_route, failed_route, **context):
     ti = context['dag_run'].get_task_instance(task_id=f'{upstream_task}')
