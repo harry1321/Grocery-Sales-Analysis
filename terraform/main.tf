@@ -1,19 +1,22 @@
-# Define the provider
+# This file will create a GCE VM for running airflow, 
+# a GCS bucket to store raw csv files, 
+# and create a firewall policy in order to visit airflow UI at 8080.
 provider "google" {
   credentials = file(var.credential)
   project     = var.project_id
   region      = var.region
 }
 
-resource "google_compute_instance" "airflow_vm" {
-  name         = "airflow-local-instance-test"
-  machine_type = "e2-micro"
+resource "google_compute_instance" "airflow-instance" {
+  # name your GCE VM
+  name         = "airflow-instance"
+  machine_type = "e2-standard-8"
   zone         = var.zone
 
   boot_disk {
     initialize_params {
       image = "ubuntu-os-cloud/ubuntu-2004-lts"
-      size  = 30
+      size  = 80
     }
   }
 
@@ -21,9 +24,6 @@ resource "google_compute_instance" "airflow_vm" {
     network = "default"
     access_config {} # 允許外部訪問
   }
-
-  # 使用外部啟動腳本
-  metadata_startup_script = file("./gce_airflow/startup_script.sh")
 
   tags = ["airflow"]
 }
@@ -34,19 +34,20 @@ resource "google_compute_firewall" "allow_airflow_ports" {
 
   allow {
     protocol = "tcp"
-    ports    = ["8888", "8080"]
+    ports    = ["8080"]
   }
   
   target_tags = ["airflow"]
-  source_ranges = ["0.0.0.0/0"] # 允許來自任何 IP 的連線
+  source_ranges = ["0.0.0.0/0"] # You can change to your computer IP
 }
 
-output "jupyter_url" {
-  value       = "http://${google_compute_instance.airflow_vm.network_interface.0.access_config.0.nat_ip}:8888"
-  description = "Jupyter Notebook 的訪問網址"
+resource "google_storage_bucket" "raw-data-bucket" {
+  name     = "${var.project_id}-raw-data-westus1"
+  location = "US-WEST1"
+  storage_class = "STANDARD"
 }
 
-output "spark_url" {
-  value       = "http://${google_compute_instance.airflow_vm.network_interface.0.access_config.0.nat_ip}:8080"
+output "airflow_webserver_url" {
+  value       = "http://${google_compute_instance.airflow-instance.network_interface.0.access_config.0.nat_ip}:8080"
   description = "Airflow UI 的訪問網址"
 }
