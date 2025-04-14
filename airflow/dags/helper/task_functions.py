@@ -43,10 +43,14 @@ def task_get(ti,dataset_name='andrexibiza/grocery-sales-dataset') -> None:
     os.environ["KAGGLE_USERNAME"] = creds["username"]
     os.environ["KAGGLE_KEY"] = creds["key"]
 
+    folder_path = '/opt/airflow/tmp'
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    
     api = KaggleApi()
     api.authenticate()
     print(f"正在下載 Kaggle 資料集：{dataset_name}...")
-    api.dataset_download_files(dataset_name, path='/opt/airflow/data/', unzip=True)
+    api.dataset_download_files(dataset_name, path=folder_path, unzip=True)
     print("Kaggle 資料集下載完成！")
 
 def task_load_gcs(data_state,ti) -> None:
