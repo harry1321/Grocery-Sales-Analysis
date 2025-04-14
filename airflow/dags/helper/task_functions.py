@@ -79,7 +79,7 @@ def task_check_gcs(ti) -> None:
     Check target data exsist in GCS or not.
     '''
     temp = ti.xcom_pull(task_ids="get")
-    check_list = temp.get("file_names")
+    check_list = temp.get("check_list")
 
     gcs = GCSBucket()
     for item in check_list:

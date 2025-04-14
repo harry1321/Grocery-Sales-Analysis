@@ -39,8 +39,6 @@ def task_get(ti, dataset_name='andrexibiza/grocery-sales-dataset') -> None:
     api.dataset_download_files(dataset_name, path=folder_path, unzip=True)
     print("Kaggle 資料集下載完成！")
     file_names = os.listdir(folder_path)
-    for f in file_names:
-        print(file_names)
     file_names = [f for f in file_names if os.path.isfile(os.path.join(folder_path, f))]
     return {'check_list': file_names}
 
@@ -59,7 +57,7 @@ def task_check_gcs(ti) -> None:
     Check target data exsist in GCS or not.
     '''
     temp = ti.xcom_pull(task_ids="get")
-    check_list = temp.get("file_names")
+    check_list = temp.get("check_list")
 
     gcs = GCSBucket()
     for item in check_list:
