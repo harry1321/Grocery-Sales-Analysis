@@ -1,6 +1,6 @@
 SELECT
     cus.CustomerID,
-    CONCAT(cus.FirstName,' ',cus.LastName,'-',ci.CityName) AS CustomerName,
+    CONCAT(cus.FirstName,' ',cus.LastName,'-',cus.CustomerID) AS CustomerName,
     ci.CityName,
     co.CountryName,
     cus.Address
