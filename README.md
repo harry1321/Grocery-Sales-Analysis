@@ -60,27 +60,28 @@ This project proposes a data engineering pipeline that automates the data proces
 
 ### Data Pipeline Architecture
 
-This pipeline contains the following parts of precessing data:
-- **Data Extraction**: Download data files from [Kaggle Grocery Sales Database](https://www.kaggle.com/datasets/andrexibiza/grocery-sales-dataset) which consists of sales transactions, customer demographics, product details, employee records, and geographical information across multiple cities. Time period begins from January in 2018 to May 10th in 2018 and contains 6,758,125 rows of transation data.
+This pipeline contains the following parts of precessing data, and **all tasks were built and ran on the cloud**:
 
-- **Data Cleaning**: Apply a variety of rules to filter out unqualified data and employ the moving average method to impute those data points. Additionally, calculated a bad data ratio to assess data quality. Data failing to meet the threshold will undergo further review.
+- **Data Extraction**: In airflow a task called get will download data files from [Kaggle Grocery Sales Database](https://www.kaggle.com/datasets/andrexibiza/grocery-sales-dataset) by KaggleAPI which consists of sales transactions, customer demographics, product details, employee records, and geographical information across multiple cities. Time period begins from January 1st in 2018 to May 10th in 2018 with 6,758,125 rows of transation data.
 
-- **Data Loading**: Store the data into Google Cloud Storage for long term storage. Then load the simplely processed data into a BigQuery dataset, which is designated to be transformed by DBT.
+- **Data Loading**: In the second stage, the airflow tasks will store the raw data in Google Cloud Storage for long term storage. Then load files from GCS to BigQuery dataset with defined schema, after that all tables are ready to be transformed by DBT.
 
-- **Data Transform**: Transform the data to prepare it for analysis with DBT..
+- **Data Transform**: First, seeds data will be created into tables by DBT, and then join with customer data, employee data and product data as dimensional model. After that a staging model called `stg_sales` is built as a fact table which is **partioned by `SalesDay` and clustering by `CustomerID`**. The reason for doing so is that the downstream models will groupby `CustomerID` frequently and the dashboard will apply a date range filter to filter out target data. In the gold layer of models three models are created in order to build a dashboard, which are `fct_sales_summary`, `fct_customer_behavior` and `fct_employee_performance`.
 
 
 To summarize here is a snapshot from Airflow web UI to show how these job are arranged.
+
 ![architecture.png](/assets/workflow_dag.png)
 
 And this is a lineage describing how models are built in DBT.
+
 ![lineage.png](/assets/lineage.png)
 
 ## Running the Project
 
 ### Prerequisites
 - Clone this project.
-- Ensure you have a GCP, a DBT and a Kaggle account.
+- Ensure you have a GCP, a DBT cloud and a Kaggle account.
 - Clone this project to local drive. 
 - Prepare credentials API keys.
     - Store GCP credentials API key with GCE admin role in `./secrets`.
@@ -131,9 +132,9 @@ For Kaggle API Key Refer [here](https://www.kaggle.com/docs/api) for instruction
     - Make connections with your cloud data warehouse service.
     - Create a project and connected to your clone project.
     - Create a production environment and make sure to create a service token which you will need in the airflow UI connection setting.
-    - You can create jobs that will be triggered by airflow and remember to copy all the jobs ID to `variables.json`
+    - You can create jobs which can be triggered by airflow and remember to copy all the jobs ID to `variables.json`
 3. Building airflow service:
-    - Once the resources are build, you need to access into the VM and run the shell script called `run_airflow.sh` in order to install docker.
+    - Once the resources are built, you need to access into the VM and run the shell script called `run_airflow.sh` in order to install docker.
     - After docker is installed, go to `./Retail-Promo-Analysis` and run the command below.
         - `docker compose up airflow-init`
         - `docker compose up -d`
