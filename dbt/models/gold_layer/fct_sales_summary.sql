@@ -3,7 +3,7 @@ SELECT
     s.SalesDate,
     EXTRACT(YEAR from s.SalesDate) AS SalesYear,
     EXTRACT(MONTH from s.SalesDate) AS SalesMonth,
-    EXTRACT(DAY from s.SalesDate) AS SalesDay,
+    s.SalesDay,
     EXTRACT(HOUR from s.SalesDate) AS SalesTime,
     e.EmployeeName AS Employee,
     c.CustomerName AS Customer,

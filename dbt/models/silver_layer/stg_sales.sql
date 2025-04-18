@@ -16,6 +16,7 @@ SELECT
     ROUND(COALESCE(Quantity,0),2) AS Quantity,
     ROUND(COALESCE(Discount,0),2) AS Discount,
     SalesDate,
+    CAST(SalesDate AS DATE) AS SalesDay,
     TransactionNumber
 FROM {{source("raw_data","sales")}}
 WHERE

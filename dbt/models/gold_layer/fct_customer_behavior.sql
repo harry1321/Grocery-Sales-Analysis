@@ -4,7 +4,6 @@ WITH sales_data AS (
 
     SELECT
         s.CustomerID,
-        --c.CustomerName,
         s.TransactionNumber,
         p.CategoryName,
         s.Quantity,
@@ -14,7 +13,7 @@ WITH sales_data AS (
             WHEN s.Discount > 0 THEN 1
             ELSE 0
         END AS DiscountOrNot,
-        CAST(SalesDate AS DATE) AS PurchaseDate
+        s.SalesDay AS PurchaseDate
 
     FROM {{ ref('stg_sales') }} s
     LEFT JOIN {{ ref('dim_products') }} p 
@@ -24,7 +23,6 @@ WITH sales_data AS (
 customer_category_counts AS (
     SELECT
         CustomerID,
-        --CustomerName,
         CategoryName,
         COUNT(*) AS purchase_count
     FROM sales_data
