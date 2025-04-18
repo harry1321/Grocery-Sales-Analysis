@@ -8,7 +8,8 @@ from airflow.models import Variable
 # ex: AWS_S3_BUCKET = Variable.get("AWS_S3_BUCKET")
 # https://cloud.google.com/storage/docs/samples/storage-transfer-manager-upload-directory#storage_transfer_manager_upload_directory-python
 
-def load_variables_from_json(json_filepath=Path(__file__).resolve.parent.parent.parent / 'variables.json'):
+vars_filepath=Path(__file__).resolve.parent.parent.parent / 'variables.json'
+def load_variables_from_json(json_filepath=vars_filepath):
     """Loads Airflow variables from a JSON file.
 
     :param json_filepath: The absolute or relative path to the JSON file.
