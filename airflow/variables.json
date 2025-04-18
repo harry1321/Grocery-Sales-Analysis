@@ -2,7 +2,7 @@
   "BUCKET_CLASS": "STANDARD",
   "BUCKET_LOCATION": "US-WEST1",
   "BUCKET_NAME": "decamp_project_sample",
-  "DATASET_NAME": "grocery_data",
+  "DATASET_NAME": "prod_grocery_data",
   "GCP_CREDENTIALS_FILE_PATH": "/opt/airflow/google/storage.json",
   "GCP_PROJECT_ID": "datacamp-nytaxi-dbt-2025",
   "DBT_ACCOUNT_ID": 70471823453880,
