@@ -88,14 +88,14 @@ aggregated AS (
 
     FROM sales_data sd
 
-    LEFt JOIN customer_category_preference ccp ON sd.CustomerID = ccp.CustomerID
+    LEFT JOIN customer_category_preference ccp ON sd.CustomerID = ccp.CustomerID
     LEFT JOIN weekly_activity wk ON sd.CustomerID = wk.CustomerID
     --LEFT JOIN customer_purchase_dates cpd ON sd.CustomerID = cpd.CustomerID
     GROUP BY sd.CustomerID
 
 )
 
-SELECT dim_c.CustomerName, a.* EXCEPT (a.CustomerID)
+SELECT dim_c.CustomerName, a.* EXCEPT (CustomerID)
 FROM aggregated a
 LEFT JOIN {{ ref("dim_customers") }} dim_c ON dim_c.CustomerID = a.CustomerID
 
