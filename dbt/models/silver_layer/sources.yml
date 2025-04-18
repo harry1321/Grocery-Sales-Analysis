@@ -6,7 +6,7 @@ sources:
     database: datacamp-nytaxi-dbt-2025
     schema:
       # name of dataset
-      grocery_data
+      prod_grocery_data
       # Use env_var to differentiate target dataset
       # "{% if env_var('DBT_ENV') == 'dev' %}grocery_test{% else %}grocery_data{% endif %}"
       # loaded_at_field: record_loaded_at

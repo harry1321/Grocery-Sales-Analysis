@@ -3,10 +3,18 @@ models:
     description: Stores details about the products being sold.
     columns:
       - name: ProductID
+        description: Unique identifier for each product.
       - name: ProductName
+        description: Name of the product.
       - name: Price
+        description: Price per unit of the product.
       - name: CategoryName
+        description: Unique category identifier
       - name: Class
+        description: Classification of the product.
       - name: Resistant
+        description: Product resistance category.
       - name: IsAllergic
+        description: Indicates whether the item is an allergen
       - name: VitalityDays
+        description: Product vital type classification.

@@ -8,7 +8,7 @@ WITH sales_data AS (
         e.CountryName AS Country,
         s.TransactionNumber,
         s.Quantity,
-        (s.Quantity*p.Price*s.Discount) AS TotalPrice,
+        (s.Quantity*p.Price*(1-s.Discount)) AS TotalPrice,
         s.Discount,
         s.SalesDate
     FROM {{ ref('stg_sales') }} s

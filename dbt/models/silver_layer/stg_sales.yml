@@ -3,13 +3,26 @@ models:
     description: Contains transactional data for each sale.
     columns:
       - name: SalesID
+        description: Unique identifier for each sale.
       - name: SalesPersonID
+        description: Employee responsible for the sale.
       - name: CustomerID
+        description: Customer making the purchase.
       - name: ProductID
+        description: Product being sold.
       - name: Quantity
+        description: Number of units sold.
       - name: Discount
-      - name: SalesYear
-      - name: SalesMonth
+        description: Discount applied to the sale.
       - name: SalesDate
+        description: Date and time of the sale happened.
+      - name: SalesYear
+        description: Year of the sale happened.
+      - name: SalesMonth
+        description: Month of the sale happened.
+      - name: SalesDate
+        description: Day of the sale happened.
       - name: SalesTime
+        description: Hour of the sale happened.
       - name: TransactionNumber
+        description: Unique identifier for the transaction.

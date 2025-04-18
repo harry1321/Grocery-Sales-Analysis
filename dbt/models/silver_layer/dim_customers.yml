@@ -3,7 +3,12 @@ models:
     description: Contains information about the customers who make purchases.
     columns:
       - name: CustomerID
+        description: Unique identifier for each customer.
       - name: CustomerName
+        description: Name of the customer.
       - name: CityName
+        description: City of the customer.
       - name: CountryName
+        description: City of the customer.
       - name: Address
+        description: Residential address of the customer.

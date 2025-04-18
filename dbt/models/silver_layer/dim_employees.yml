@@ -3,7 +3,16 @@ models:
     description: Stores details of employees handling sales transactions.
     columns:
       - name: EmployeeID
+        description: Unique identifier for each employee.
       - name: EmployeeName
+        description: Name of the employee.
       - name: Gender
+        description: Gender of the employee.
       - name: HireDate
-      - name: CityID
+        description: Date when the employee was hired.
+      - name: Age
+        description: Age of the employee.
+      - name: City
+        description: City of the employee works in.
+      - name: Country
+        description: Country of the employee works in.

@@ -4,7 +4,8 @@ SELECT
     s.SalesMonth,
     s.SalesDate,
     s.SalesTime,
-    c.CustomerName,
+    e.EmployeeName AS Employee,
+    c.CustomerName AS Customer,
     p.ProductName,
     p.CategoryName,
     c.CityName,
@@ -13,11 +14,13 @@ SELECT
     p.Price,
     s.Discount,
     ROUND(s.Quantity*p.Price) AS GrossRevenue,
-    ROUND(s.Quantity*p.Price*s.Discount) AS NetRevenue
+    ROUND(s.Quantity*p.Price*(1-s.Discount)) AS NetRevenue
 
 FROM {{ ref("stg_sales") }} AS s
 JOIN {{ ref("dim_customers") }} AS c 
     ON s.CustomerID = c.CustomerID
+JOIN {{ ref("dim_employees") }} AS e 
+    ON s.SalesPersonID = e.EmployeeID
 JOIN {{ ref("dim_products") }} AS p
     ON p.ProductID = s.ProductID
 
