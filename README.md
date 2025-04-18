@@ -20,6 +20,15 @@ This project builds a data engineering pipeline to analyze grocery sales data an
 
 The Grocery Sales Dataset, sourced from Kaggle, comprises seven interconnected tables covering transactional, customer, product, and geographic data. The dataset includes detailed records of product categories, customers’ personal and location information, product attributes, employee details, and a comprehensive sales log. The data spans a four-month period and provides a rich foundation for analyzing consumer behavior, sales performance, and regional sales distribution.
 
+Diagram below shows an overview of data pipeline architecture used in this project.
+
+<p align="center">
+    <img src="/assets/architecture.png" width="60%", height="60%"
+    <em></em>
+</p>
+
+
+
 ## Problem Statement
 
 This dashboard aims to tackle real-world business challenges such as understanding customer purchasing patterns, evaluating sales team effectiveness, and identifying high-performing regions. Specifically, the goal is to enable data-driven decisions that optimize marketing strategies, improve customer retention, and allocate sales resources more effectively.
