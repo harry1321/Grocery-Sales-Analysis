@@ -8,12 +8,14 @@ from airflow.models import Variable
 # ex: AWS_S3_BUCKET = Variable.get("AWS_S3_BUCKET")
 # https://cloud.google.com/storage/docs/samples/storage-transfer-manager-upload-directory#storage_transfer_manager_upload_directory-python
 
-vars_filepath=Path(__file__).resolve.parent.parent.parent / 'variables.json'
-def load_variables_from_json(json_filepath=vars_filepath):
+def load_variables_from_json(json_filepath=None):
     """Loads Airflow variables from a JSON file.
 
     :param json_filepath: The absolute or relative path to the JSON file.
     """
+    if json_filepath is None:
+        json_filepath = Path(__file__).resolve().parent.parent.parent / 'variables.json'
+
     try:
         with open(json_filepath, 'r') as f:
             variables_data = json.load(f)
@@ -25,6 +27,7 @@ def load_variables_from_json(json_filepath=vars_filepath):
         print(f"Error: JSON file not found at {json_filepath}")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
+load_variables_from_json()
 
 GCP_CREDENTIALS_FILE_PATH = Variable.get("GCP_CREDENTIALS_FILE_PATH")
 GCP_PROJECT_ID = Variable.get('GCP_PROJECT_ID')
