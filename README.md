@@ -148,10 +148,7 @@ For Kaggle API Key Refer [here](https://www.kaggle.com/docs/api) for instruction
 ## Dashboard
 You can access this dashboard from [here](https://lookerstudio.google.com/s/jEFS_2hqVB0).
 
-<p align="center">
-    <img src="/assets/dashboard_snap.png" width="60%", height="60%">
-    <em></em>
-</p>
+![lineage.png](/assets/dashboard_snap.png)
 
 ## Contact Information
 📧 Email: [r08521524@ntu.edu.tw](mailto:r08521524@ntu.edu.tw)  
