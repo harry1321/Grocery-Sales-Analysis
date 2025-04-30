@@ -30,11 +30,11 @@ recommend_df = spark.read.format("bigquery") \
 # 為每個推薦 ID 加入產品名稱
 recommend_with_names = recommend_df \
     .join(products_df.select(col("ProductID").alias("pid1"), col("ProductName").alias("ReommendProduct1")),
-          recommend_df["recommend_ProductID_1"] == col("pid1"), "left") \
+          recommend_df["recommend_1"] == col("pid1"), "left") \
     .join(products_df.select(col("ProductID").alias("pid2"), col("ProductName").alias("ReommendProduct2")),
-          recommend_df["recommend_ProductID_2"] == col("pid2"), "left") \
+          recommend_df["recommend_2"] == col("pid2"), "left") \
     .join(products_df.select(col("ProductID").alias("pid3"), col("ProductName").alias("ReommendProduct3")),
-          recommend_df["recommend_ProductID_3"] == col("pid3"), "left")
+          recommend_df["recommend_3"] == col("pid3"), "left")
 
 # 加入顧客姓名
 final_df = recommend_with_names \
