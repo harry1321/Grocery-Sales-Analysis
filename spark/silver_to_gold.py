@@ -28,23 +28,31 @@ recommend_df = spark.read.format("bigquery") \
     .option("table", f"{GCP_PROJECT_ID}.{silver}.stg_recommend") \
     .load()
 
-# 為每個推薦 ID 加入產品名稱
+# 使用別名避免重複 join 出錯
+p1 = products_df.alias("p1")
+p2 = products_df.alias("p2")
+p3 = products_df.alias("p3")
+
+# 加入推薦商品名稱
 recommend_with_names = recommend_df \
-    .join(products_df.select(col("ProductID").alias("pid1"), col("ProductName").alias("ReommendProduct1")),
-          recommend_df["recommend_1"] == col("pid1"), "left") \
-    .join(products_df.select(col("ProductID").alias("pid2"), col("ProductName").alias("ReommendProduct2")),
-          recommend_df["recommend_2"] == col("pid2"), "left") \
-    .join(products_df.select(col("ProductID").alias("pid3"), col("ProductName").alias("ReommendProduct3")),
-          recommend_df["recommend_3"] == col("pid3"), "left")
+    .join(p1, recommend_df["recommend_1"] == col("p1.ProductID"), "left") \
+    .join(p2, recommend_df["recommend_2"] == col("p2.ProductID"), "left") \
+    .join(p3, recommend_df["recommend_3"] == col("p3.ProductID"), "left") \
+    .select(
+        "CustomerID",
+        col("p1.ProductName").alias("RecommendProduct1"),
+        col("p2.ProductName").alias("RecommendProduct2"),
+        col("p3.ProductName").alias("RecommendProduct3")
+    )
 
 # 加入顧客姓名
 final_df = recommend_with_names \
     .join(customers_df.select("CustomerID", "CustomerName"), on="CustomerID", how="left") \
     .select(
         "CustomerName",
-        "ReommendProduct1",
-        "ReommendProduct2",
-        "ReommendProduct3"
+        "RecommendProduct1",
+        "RecommendProduct2",
+        "RecommendProduct3"
     )
 
 # 將結果寫回 BigQuery 成為新表格
