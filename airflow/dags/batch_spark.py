@@ -34,7 +34,6 @@ with dag:
     spark_raw_silver = LivyOperator(
         task_id="spark_raw_silver",
         file=SPARK_SCRIPT_PATHS['silver'],
-        name="spark_gen_recommend",
         conf={
             "spark.master": "local[*]",
             "spark.app.name": "spark_gen_recommend",
@@ -59,7 +58,6 @@ with dag:
     spark_silver_gold = LivyOperator(
         task_id="spark_silver_gold",
         file=SPARK_SCRIPT_PATHS['gold'],
-        name="spark_silver_gold",
         conf={
             "spark.master": "local[*]",
             "spark.app.name": "spark_silver_gold",
