@@ -6,6 +6,7 @@ from pyspark.sql.functions import col
 # 接收從外部傳入的參數
 SPARK_APP_NAME = sys.argv[1]
 GCP_PROJECT_ID = sys.argv[2]
+BUCKET_NAME = sys.argv[3]
 silver = "prod_silver_layer"
 gold = "prod_gold_layer"
 
@@ -49,5 +50,6 @@ final_df = recommend_with_names \
 # 將結果寫回 BigQuery 成為新表格
 final_df.write.format("bigquery") \
     .option("table", f"{GCP_PROJECT_ID}.{gold}.mart_recommend") \
+    .option("temporaryGcsBucket", f"{BUCKET_NAME}") \
     .mode("overwrite") \
     .save()

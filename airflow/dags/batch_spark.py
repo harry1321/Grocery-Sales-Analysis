@@ -43,7 +43,7 @@ with dag:
             "spark.hadoop.fs.gs.auth.service.account.enable": "true",
         },
         args=[
-            "spark_gen_recommend",
+            "spark_raw_silver",
             GCP_PROJECT_ID,
             BUCKET_NAME
         ],
@@ -68,7 +68,8 @@ with dag:
         },
         args=[
             "spark_silver_gold",
-            GCP_PROJECT_ID
+            GCP_PROJECT_ID,
+            BUCKET_NAME
         ],
         executor_cores=2,
         executor_memory="2g",
