@@ -148,8 +148,7 @@ with dag:
         num_executors=2,
         livy_conn_id="livy",  # 在 Airflow Connections 設定你的 Livy endpoint
         polling_interval=30,
-        timeout=1800,
-        deferrable=True  # 這裡是重點：啟用 deferrable mode
+        deferrable=True
     )
 
     build_recommend = DbtCloudRunJobOperator(
