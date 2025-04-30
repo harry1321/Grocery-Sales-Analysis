@@ -38,7 +38,7 @@ recommend_with_names = recommend_df \
 
 # 加入顧客姓名
 final_df = recommend_with_names \
-    .join(customers_df.select("CustomerID", "CustomerNam"), on="CustomerID", how="left") \
+    .join(customers_df.select("CustomerID", "CustomerName"), on="CustomerID", how="left") \
     .select(
         "CustomerName",
         "ReommendProduct1",
