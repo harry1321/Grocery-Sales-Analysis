@@ -1,11 +1,13 @@
+from Github.Retail-Promo-Analysis.airflow.dags.helper.variables import SPARK_SCRIPT_PATHS
 from datetime import datetime,timedelta
 
 from airflow.models import DAG
+from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.operators.bash import BashOperator
 from airflow.providers.dbt.cloud.operators.dbt import DbtCloudRunJobOperator
+from airflow.providers.apache.livy.operators.livy import LivyOperator
 from airflow.utils.task_group import TaskGroup
-from airflow.operators.empty import EmptyOperator
 
 from google.cloud import bigquery
 
@@ -13,6 +15,7 @@ from helper.task_functions import task_date, task_get, task_load_gcs, task_check
 from helper.variables import GCP_CREDENTIALS_FILE_PATH, GCP_PROJECT_ID
 from helper.variables import BUCKET_NAME, BUCKET_CLASS, BUCKET_LOCATION, DATASET_NAME
 from helper.variables import DBT_ACCOUNT_ID, DBT_CONN_ID, DBT_JOBS_ID
+from helper.variables import SPARK_SCRIPT_PATHS, SPARK_APP_NAME, SPARK_CREDENTIAL_PATH
 
 # Import your data schema
 from helper.grocery_schema import dataset_schema
@@ -103,8 +106,8 @@ with dag:
         for model in models:
             DbtCloudRunJobOperator(
                 task_id=f'{model}',
-                job_id= DBT_JOBS_ID[f'{model}'],
-                account_id= DBT_ACCOUNT_ID,
+                job_id=DBT_JOBS_ID[f'{model}'],
+                account_id=DBT_ACCOUNT_ID,
                 dbt_cloud_conn_id=DBT_CONN_ID,
                 wait_for_termination=True
             )
@@ -118,10 +121,45 @@ with dag:
         for model in models:
             DbtCloudRunJobOperator(
                 task_id=f'{model}',
-                job_id= DBT_JOBS_ID[f'{model}'],
-                account_id= DBT_ACCOUNT_ID,
+                job_id=DBT_JOBS_ID[f'{model}'],
+                account_id=DBT_ACCOUNT_ID,
                 dbt_cloud_conn_id=DBT_CONN_ID,
                 wait_for_termination=True
             )
 
-date >> get >> load_gcs >> check_gcs >> load_gbq >> check_dbt_con >> create_dbt_seed >> build_staing_model >> build_mart_model
+    spark_raw_silver = LivyOperator(
+        task_id="spark_raw_silver",
+        file=SPARK_SCRIPT_PATHS['silver'],
+        name="spark_gen_recommend",
+        conf={
+            "spark.master": "local[*]",
+            "spark.app.name": SPARK_APP_NAME,
+            "spark.hadoop.fs.AbstractFileSystem.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS",
+            "spark.hadoop.fs.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem",
+            "spark.hadoop.fs.gs.auth.service.account.json.keyfile": SPARK_CREDENTIAL_PATH,
+            "spark.hadoop.fs.gs.auth.service.account.enable": "true",
+        },
+        args=[
+            SPARK_APP_NAME,
+            GCP_PROJECT_ID,
+            BUCKET_NAME
+        ],
+        executor_cores=2,
+        executor_memory="2g",
+        num_executors=2,
+        livy_conn_id="livy",  # 在 Airflow Connections 設定你的 Livy endpoint
+        polling_interval=30,
+        timeout=1800,
+        deferrable=True  # 這裡是重點：啟用 deferrable mode
+    )
+
+    build_recommend = DbtCloudRunJobOperator(
+        task_id="build_recommend",
+        job_id=DBT_JOBS_ID["recommend"],
+        account_id=DBT_ACCOUNT_ID,
+        dbt_cloud_conn_id=DBT_CONN_ID,
+        wait_for_termination=True
+    )
+
+date >> get >> load_gcs >> check_gcs >> load_gbq >> check_dbt_con >> create_dbt_seed >> build_staing_model >> [build_mart_model,spark_raw_silver]
+spark_raw_silver >> build_recommend

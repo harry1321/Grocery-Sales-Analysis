@@ -41,3 +41,6 @@ DBT_CONN_ID = Variable.get('DBT_CONN_ID')
 # 從 Airflow Variable 中獲取 JSON 字串並解析成 Python 字典
 dbt_jobs_id_str = Variable.get('DBT_JOBS_ID')
 DBT_JOBS_ID = json.loads(dbt_jobs_id_str)
+
+script_paths = Variable.get('SPARK_SCRIPT_PATHS')
+SPARK_SCRIPT_PATHS = json.loads(script_paths)
