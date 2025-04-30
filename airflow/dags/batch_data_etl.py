@@ -153,7 +153,7 @@ with dag:
 
     build_recommend = DbtCloudRunJobOperator(
         task_id="build_recommend",
-        job_id=DBT_JOBS_ID["recommend"],
+        job_id=DBT_JOBS_ID["build_mart_recommend"],
         account_id=DBT_ACCOUNT_ID,
         dbt_cloud_conn_id=DBT_CONN_ID,
         wait_for_termination=True

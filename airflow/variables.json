@@ -15,7 +15,8 @@
     "build_dim_models": 70471823453599,
     "build_fct_sales_summary": 70471823453607,
     "build_fct_employee_performance": 70471823453606,
-    "build_fct_customer_behavior": 70471823453601
+    "build_fct_customer_behavior": 70471823453601,
+    "build_mart_recommend": 70471823453601
   },
   "SPARK_SCRIPT_PATHS":{
     "silver":"/home/learningde2025/spark/Grocery-Sales-Analysis/spark/raw_to_silver.py",
