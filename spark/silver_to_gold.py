@@ -15,9 +15,17 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 # 讀取 customers, products, recommend 資料
-customers_df = spark.read.format("bigquery").option("table", f"{GCP_PROJECT_ID}.{silver}.dim_customers").load()
-products_df = spark.read.format("bigquery").option("table", f"{GCP_PROJECT_ID}.{silver}.dim_products").load()
-recommend_df = spark.read.format("bigquery").option("table", f"{GCP_PROJECT_ID}.{silver}.stg_recommend").load()
+customers_df = spark.read.format("bigquery") \
+    .option("table", f"{GCP_PROJECT_ID}.{silver}.dim_customers") \
+    .option("viewsEnabled", "true") \
+    .load()
+products_df = spark.read.format("bigquery") \
+    .option("table", f"{GCP_PROJECT_ID}.{silver}.dim_products") \
+    .option("viewsEnabled", "true") \
+    .load()
+recommend_df = spark.read.format("bigquery") \
+    .option("table", f"{GCP_PROJECT_ID}.{silver}.stg_recommend") \
+    .load()
 
 # 為每個推薦 ID 加入產品名稱
 recommend_with_names = recommend_df \
