@@ -11,7 +11,7 @@
 [Running the Project](#running-the-project) •
 [Dashboard](#dashboard) • 
 [Contact](#contact-information) • 
-[Awesome Resources](#awesome-resources) • 
+[Awesome Resources](#awesome-resources)
 </div>
 
 ---
@@ -71,10 +71,15 @@ And this is a lineage describing how models are built in DBT.
 
 ### Prerequisites
 - Clone this project.
+<<<<<<< Updated upstream
 - Ensure you have a GCP, a DBT and a Kaggle account.
 - Clone this project to local drive. 
+=======
+- Ensure you have a GCP, a DBT cloud and a Kaggle account.
+- Clone this project to local drive for cloud services build-up.
+>>>>>>> Stashed changes
 - Prepare credentials API keys.
-    - Store GCP credentials API key with GCE admin role in `./secrets`.
+    - Store GCP credentials API key with GCE admin role and GCS admin role in `./secrets`.
     - Store GCP credentials API key with GCS admin role and GBQ admin role in `./airflow/google`.
     - Store Kaggle API key in `./airflow/dags/.kaggle`
 - Edit variables.json to ensure your cloud resource name are all set up properly.
@@ -116,15 +121,21 @@ For Kaggle API Key Refer [here](https://www.kaggle.com/docs/api) for instruction
 1. Cloud resources provision:
     - Update the terraform `main.tf` `variable.tf` with your GCP project ID and desired resource configurations before running these commands.
     - To build cloud resource you need a [Local Setup for Terraform and GCP](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/01-docker-terraform/1_terraform_gcp)
-    - run `terraform init` then `terraform plan` then `terraform apply`
+    - Run `terraform init` then `terraform plan` then `terraform apply`.
 2. Prepare DBT production environment:
-    - Make sure you have a Team DBT cloud account so that you can use API to trigger jobs created in DBT cloud.
+    - Make sure you have a **Team** DBT cloud account so that you can use API to trigger jobs created in DBT cloud.
     - Make connections with your cloud data warehouse service.
-    - Create a project and connected to your clone project.
+    - Create a project and connected to your forked project.
     - Create a production environment and make sure to create a service token which you will need in the airflow UI connection setting.
+<<<<<<< Updated upstream
     - You can create jobs that will be triggered by airflow and remember to copy all the jobs ID to `variables.json`
 3. Building airflow service:
     - Once the resources are build, you need to access into the VM and run the shell script called `run_airflow.sh` in order to install docker.
+=======
+    - You can create jobs which can be triggered by airflow and remember to copy all the jobs ID to `variables.json`.
+3. Building airflow service:
+    - The cloud resources have already been built in step 1, and now you need to access into the VM and clone this project. After that, run the shell script called `run_airflow.sh` in order to install docker.
+>>>>>>> Stashed changes
     - After docker is installed, go to `./Retail-Promo-Analysis` and run the command below.
         - `docker compose up airflow-init`
         - `docker compose up -d`
@@ -132,7 +143,9 @@ For Kaggle API Key Refer [here](https://www.kaggle.com/docs/api) for instruction
     - Go to the variables setting in airflow UI, and upload the `variables.json` under airflow directory.
     - Go to the connection setting in airflow UI, and in here you need to add a connection to your DBT cloud. For more instructions go to [Guides to Airflow and dbt Cloud](https://docs.getdbt.com/guides/airflow-and-dbt-cloud?step=1)
 4. Trigger ELT pipeline in airflow UI.
-    - Once all the services are set, and we are ready to go. Now visit the dags you created and trigger ELT pipeline in airflow UI.
+    - Once all the services are set, and we are ready to go.
+    - Since the dataset I used is a historical data, so you've to trigger the pipeline on your own.
+    - Now visit the dags you created and trigger pipeline in airflow UI.
 5. Building your own dashboard
     - Visit [Looker Studio](https://lookerstudio.google.com/) and start to build your dashboard.
 
@@ -150,5 +163,11 @@ You can access this dashboard from [here](https://lookerstudio.google.com/s/jEFS
 
 Feel free to reach out!
 
+<<<<<<< Updated upstream
 ## Awesome Resources
 - https://github.com/DataTalksClub/data-engineering-zoomcamp
+=======
+## Acknowledgments
+- A final project for [Data Engineering Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp) by [DataTalks.Club](http://datatalks.club/)
+- Dataset from [Kaggle Grocery Sales Database](https://www.kaggle.com/datasets/andrexibiza/grocery-sales-dataset)
+>>>>>>> Stashed changes
