@@ -71,13 +71,8 @@ And this is a lineage describing how models are built in DBT.
 
 ### Prerequisites
 - Clone this project.
-<<<<<<< Updated upstream
-- Ensure you have a GCP, a DBT and a Kaggle account.
-- Clone this project to local drive. 
-=======
 - Ensure you have a GCP, a DBT cloud and a Kaggle account.
 - Clone this project to local drive for cloud services build-up.
->>>>>>> Stashed changes
 - Prepare credentials API keys.
     - Store GCP credentials API key with GCE admin role and GCS admin role in `./secrets`.
     - Store GCP credentials API key with GCS admin role and GBQ admin role in `./airflow/google`.
@@ -127,15 +122,9 @@ For Kaggle API Key Refer [here](https://www.kaggle.com/docs/api) for instruction
     - Make connections with your cloud data warehouse service.
     - Create a project and connected to your forked project.
     - Create a production environment and make sure to create a service token which you will need in the airflow UI connection setting.
-<<<<<<< Updated upstream
-    - You can create jobs that will be triggered by airflow and remember to copy all the jobs ID to `variables.json`
-3. Building airflow service:
-    - Once the resources are build, you need to access into the VM and run the shell script called `run_airflow.sh` in order to install docker.
-=======
     - You can create jobs which can be triggered by airflow and remember to copy all the jobs ID to `variables.json`.
 3. Building airflow service:
     - The cloud resources have already been built in step 1, and now you need to access into the VM and clone this project. After that, run the shell script called `run_airflow.sh` in order to install docker.
->>>>>>> Stashed changes
     - After docker is installed, go to `./Retail-Promo-Analysis` and run the command below.
         - `docker compose up airflow-init`
         - `docker compose up -d`
@@ -163,11 +152,6 @@ You can access this dashboard from [here](https://lookerstudio.google.com/s/jEFS
 
 Feel free to reach out!
 
-<<<<<<< Updated upstream
-## Awesome Resources
-- https://github.com/DataTalksClub/data-engineering-zoomcamp
-=======
 ## Acknowledgments
 - A final project for [Data Engineering Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp) by [DataTalks.Club](http://datatalks.club/)
 - Dataset from [Kaggle Grocery Sales Database](https://www.kaggle.com/datasets/andrexibiza/grocery-sales-dataset)
->>>>>>> Stashed changes
