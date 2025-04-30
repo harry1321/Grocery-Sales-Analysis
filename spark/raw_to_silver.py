@@ -54,7 +54,7 @@ user_recs_flat = user_recommendation.select(
 
 user_recs_flat.write \
     .format("bigquery") \
-    .option("table", f"{GCP_PROJECT_ID}.prod_gold_layer.mart_recommend") \
+    .option("table", f"{GCP_PROJECT_ID}.prod_silver_layer.stg_recommend") \
     .option("temporaryGcsBucket", f"{BUCKET_NAME}") \
     .mode("overwrite") \
     .save()

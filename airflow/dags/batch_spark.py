@@ -37,14 +37,14 @@ with dag:
         name="spark_gen_recommend",
         conf={
             "spark.master": "local[*]",
-            "spark.app.name": SPARK_APP_NAME,
+            "spark.app.name": "spark_gen_recommend",
             "spark.hadoop.fs.AbstractFileSystem.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS",
             "spark.hadoop.fs.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem",
             "spark.hadoop.fs.gs.auth.service.account.json.keyfile": SPARK_CREDENTIAL_PATH,
             "spark.hadoop.fs.gs.auth.service.account.enable": "true",
         },
         args=[
-            SPARK_APP_NAME,
+            "spark_gen_recommend",
             GCP_PROJECT_ID,
             BUCKET_NAME
         ],
@@ -52,31 +52,31 @@ with dag:
         executor_memory="2g",
         num_executors=2,
         livy_conn_id="livy",  # 在 Airflow Connections 設定你的 Livy endpoint
-        polling_interval=30,
+        polling_interval=60,
         deferrable=True
     )
 
     spark_silver_gold = LivyOperator(
         task_id="spark_silver_gold",
         file=SPARK_SCRIPT_PATHS['gold'],
-        name=SPARK_APP_NAME,
+        name="spark_silver_gold",
         conf={
             "spark.master": "local[*]",
+            "spark.app.name": "spark_silver_gold",
             "spark.hadoop.fs.AbstractFileSystem.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS",
             "spark.hadoop.fs.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem",
             "spark.hadoop.fs.gs.auth.service.account.json.keyfile": SPARK_CREDENTIAL_PATH,
             "spark.hadoop.fs.gs.auth.service.account.enable": "true",
         },
         args=[
-            SPARK_APP_NAME,
-            GCP_PROJECT_ID,
-            BUCKET_NAME
+            "spark_silver_gold",
+            GCP_PROJECT_ID
         ],
         executor_cores=2,
         executor_memory="2g",
         num_executors=2,
         livy_conn_id="livy",  # 在 Airflow Connections 設定你的 Livy endpoint
-        polling_interval=30,
+        polling_interval=60,
         deferrable=True
     )
 
