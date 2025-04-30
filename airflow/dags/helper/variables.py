@@ -44,3 +44,5 @@ DBT_JOBS_ID = json.loads(dbt_jobs_id_str)
 
 script_paths = Variable.get('SPARK_SCRIPT_PATHS')
 SPARK_SCRIPT_PATHS = json.loads(script_paths)
+SPARK_APP_NAME = Variable.get('SPARK_APP_NAME')
+SPARK_CREDENTIAL_PATH = Variable.get('SPARK_CREDENTIAL_PATH')
