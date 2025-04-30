@@ -1,4 +1,3 @@
-from Github.Retail-Promo-Analysis.airflow.dags.helper.variables import SPARK_SCRIPT_PATHS
 from datetime import datetime,timedelta
 
 from airflow.models import DAG
