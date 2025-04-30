@@ -20,6 +20,15 @@ This project builds a data engineering pipeline to analyze grocery sales data an
 
 The Grocery Sales Dataset, sourced from Kaggle, comprises seven interconnected tables covering transactional, customer, product, and geographic data. The dataset includes detailed records of product categories, customers’ personal and location information, product attributes, employee details, and a comprehensive sales log. The data spans a four-month period and provides a rich foundation for analyzing consumer behavior, sales performance, and regional sales distribution.
 
+Diagram below shows an overview of data pipeline architecture used in this project.
+
+<p align="center">
+    <img src="/assets/architecture.png" width="60%", height="60%"
+    <em></em>
+</p>
+
+
+
 ## Problem Statement
 
 This dashboard aims to tackle real-world business challenges such as understanding customer purchasing patterns, evaluating sales team effectiveness, and identifying high-performing regions. Specifically, the goal is to enable data-driven decisions that optimize marketing strategies, improve customer retention, and allocate sales resources more effectively.
@@ -51,20 +60,21 @@ This project proposes a data engineering pipeline that automates the data proces
 
 ### Data Pipeline Architecture
 
-This pipeline contains the following parts of precessing data:
-- **Data Extraction**: Download data files from [Kaggle Grocery Sales Database](https://www.kaggle.com/datasets/andrexibiza/grocery-sales-dataset) which consists of sales transactions, customer demographics, product details, employee records, and geographical information across multiple cities. Time period begins from January in 2018 to May 10th in 2018 and contains 6,758,125 rows of transation data.
+This pipeline contains the following parts of precessing data, and **all tasks were built and ran on the cloud**:
 
-- **Data Cleaning**: Apply a variety of rules to filter out unqualified data and employ the moving average method to impute those data points. Additionally, calculated a bad data ratio to assess data quality. Data failing to meet the threshold will undergo further review.
+- **Data Extraction**: In airflow a task called get will download data files from [Kaggle Grocery Sales Database](https://www.kaggle.com/datasets/andrexibiza/grocery-sales-dataset) by KaggleAPI which consists of sales transactions, customer demographics, product details, employee records, and geographical information across multiple cities. Time period begins from January 1st in 2018 to May 10th in 2018 with 6,758,125 rows of transation data.
 
-- **Data Loading**: Store the data into Google Cloud Storage for long term storage. Then load the simplely processed data into a BigQuery dataset, which is designated to be transformed by DBT.
+- **Data Loading**: In the second stage, the airflow tasks will store the raw data in Google Cloud Storage for long term storage. Then load files from GCS to BigQuery dataset with defined schema, after that all tables are ready to be transformed by DBT.
 
-- **Data Transform**: Transform the data to prepare it for analysis with DBT..
+- **Data Transform**: First, seeds data will be created into tables by DBT, and then join with customer data, employee data and product data as dimensional model. After that a staging model called `stg_sales` is built as a fact table which is **partioned by `SalesDay` and clustering by `CustomerID`**. The reason for doing so is that the downstream models will groupby `CustomerID` frequently and the dashboard will apply a date range filter to filter out target data. In the gold layer of models three models are created in order to build a dashboard, which are `fct_sales_summary`, `fct_customer_behavior` and `fct_employee_performance`.
 
 
 To summarize here is a snapshot from Airflow web UI to show how these job are arranged.
+
 ![architecture.png](/assets/workflow_dag.png)
 
 And this is a lineage describing how models are built in DBT.
+
 ![lineage.png](/assets/lineage.png)
 
 ## Running the Project
@@ -141,10 +151,7 @@ For Kaggle API Key Refer [here](https://www.kaggle.com/docs/api) for instruction
 ## Dashboard
 You can access this dashboard from [here](https://lookerstudio.google.com/s/jEFS_2hqVB0).
 
-<p align="center">
-    <img src="/assets/dashboard_snap.png" width="60%", height="60%">
-    <em></em>
-</p>
+![lineage.png](/assets/dashboard_snap.png)
 
 ## Contact Information
 📧 Email: [r08521524@ntu.edu.tw](mailto:r08521524@ntu.edu.tw)  
