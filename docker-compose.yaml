@@ -16,6 +16,9 @@
       AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
       AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
       _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+      # use secret backend to setup variables and connections, and also need to mount secret folder.
+      AIRFLOW__SECRETS__BACKEND: airflow.secrets.local_filesystem.LocalFilesystemBackend
+      AIRFLOW__SECRETS__BACKEND_KWARGS: '{"variables_file_path": "/secrets/variables.yml", "connections_file_path": "/secrets/connections.yml"}'
       KAGGLE_CONFIG_DIR: /opt/airflow/dags/.kaggle
     volumes:
       - ${AIRFLOW_PROJ_DIR:-./airflow}/dags:/opt/airflow/dags
@@ -25,6 +28,7 @@
       - ${AIRFLOW_PROJ_DIR:-./airflow}/data:/opt/airflow/data
       - ${AIRFLOW_PROJ_DIR:-./airflow}/google:/opt/airflow/google
       - ${AIRFLOW_PROJ_DIR:-./airflow}/dags/.kaggle:/home/airflow/.config/kaggle
+      - ./secrets:/home/airflow/secrets
       
     user: "${AIRFLOW_UID:-50000}:0"
     depends_on:
