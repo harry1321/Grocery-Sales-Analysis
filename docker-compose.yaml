@@ -28,7 +28,7 @@
       - ${AIRFLOW_PROJ_DIR:-./airflow}/data:/opt/airflow/data
       - ${AIRFLOW_PROJ_DIR:-./airflow}/google:/opt/airflow/google
       - ${AIRFLOW_PROJ_DIR:-./airflow}/dags/.kaggle:/home/airflow/.config/kaggle
-      - ./secrets:/home/airflow/secrets
+      - ./secrets:/opt/airflow/secrets
       
     user: "${AIRFLOW_UID:-50000}:0"
     depends_on:
