@@ -37,10 +37,10 @@ BUCKET_LOCATION = Variable.get('BUCKET_LOCATION')
 DATASET_NAME = Variable.get('DATASET_NAME')
 DBT_ACCOUNT_ID = Variable.get('DBT_ACCOUNT_ID')
 DBT_CONN_ID = Variable.get('DBT_CONN_ID')
-DBT_JOBS_ID = Variable.get('DBT_JOBS_ID', deserialize_json=True)
+DBT_JOBS_ID = Variable.get('DBT_JOBS_ID')
 
 SPARK_SCRIPT_PATHS = Variable.get('SPARK_SCRIPT_PATHS')
-SPARK_APP_NAME = Variable.get('SPARK_APP_NAME', deserialize_json=True)
+SPARK_APP_NAME = Variable.get('SPARK_APP_NAME')
 SPARK_CREDENTIAL_PATH = Variable.get('SPARK_CREDENTIAL_PATH')
 
 # 如果沒有使用 secrets backend
