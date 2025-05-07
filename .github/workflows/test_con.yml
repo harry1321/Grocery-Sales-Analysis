@@ -31,4 +31,4 @@ jobs:
 
       - name: Test SSH connection to Spark VM
         run: |
-        ssh -i ~/.ssh/spark.key -o StrictHostKeyChecking=no deengineering2025@${{ secrets.SPARK_EXTERNAL_IP }} "hostname"
+          ssh -i ~/.ssh/spark.key -o StrictHostKeyChecking=no deengineering2025@${{ secrets.SPARK_EXTERNAL_IP }} "hostname"
