@@ -1,0 +1,36 @@
+name: Rebuild Airflow Container on Infra Change
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docker-compose.yaml'
+      - 'airflow/requirements.txt'
+      - 'airflow/Dockerfile'
+      - 'secrets/**'
+
+jobs:
+  rebuild:
+    name: Rebuild Airflow Container
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup SSH keys
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GCE_AIRFLOW_SSH_KEY }}" > ~/.ssh/airflow.key
+          chmod 600 ~/.ssh/airflow.key
+
+      - name: SSH into Airflow VM and rebuild containers
+        run: |
+          ssh -i ~/.ssh/airflow.key -o StrictHostKeyChecking=no ${{ vars.SSH_USER_NAME }}@${{ vars.AIRFLOW_EXTERNAL_IP }} << 'EOF'
+            cd /home/learningde2025/Grocery-Sales-Analysis
+            docker compose down --rmi all
+            git pull origin main
+            docker compose up airflow-init
+            docker compose up -d
+          EOF

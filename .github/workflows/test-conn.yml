@@ -17,7 +17,7 @@ jobs:
 
       - name: Test SSH connection to Airflow VM
         run: |
-          ssh -i ~/.ssh/airflow.key -o StrictHostKeyChecking=no github-actions@${{ vars.AIRFLOW_EXTERNAL_IP }} "hostname"
+          ssh -i ~/.ssh/airflow.key -o StrictHostKeyChecking=no ${{ vars.SSH_USER_NAME }}@${{ vars.AIRFLOW_EXTERNAL_IP }} "hostname"
   
   ssh-test-spark:
     runs-on: ubuntu-latest
@@ -31,4 +31,4 @@ jobs:
 
       - name: Test SSH connection to Spark VM
         run: |
-          ssh -i ~/.ssh/spark.key -o StrictHostKeyChecking=no github-actions@${{ vars.SPARK_EXTERNAL_IP }} "hostname"
+          ssh -i ~/.ssh/spark.key -o StrictHostKeyChecking=no ${{ vars.SSH_USER_NAME }}@${{ vars.SPARK_EXTERNAL_IP }} "hostname"

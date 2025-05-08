@@ -1,0 +1,36 @@
+name: Update DAGS to VMs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GCE_AIRFLOW_SSH_KEY }}" > ~/.ssh/airflow.key
+          echo "${{ secrets.GCE_SPARK_SSH_KEY }}" > ~/.ssh/spark.key
+          chmod 600 ~/.ssh/airflow.key
+          chmod 600 ~/.ssh/spark.key
+
+      - name: Deploy to Airflow VM
+        run: |
+          ssh -i ~/.ssh/airflow.key -o StrictHostKeyChecking=no ${{ vars.SSH_USER_NAME }}@${{ vars.AIRFLOW_EXTERNAL_IP }} "
+            cd /home/learningde2025/Grocery-Sales-Analysis/ &&
+            git pull origin main
+          "
+
+      - name: Deploy to Spark VM
+        run: |
+          ssh -i ~/.ssh/spark.key -o StrictHostKeyChecking=no ${{ vars.SSH_USER_NAME }}@${{ vars.SPARK_EXTERNAL_IP }} "
+            cd /home/learningde2025/spark/Grocery-Sales-Analysis/ &&
+            git pull origin main
+          "
