@@ -1,14 +1,15 @@
 name: Rebuild Airflow Container on Infra Change
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'docker-compose.yaml'
-      - 'airflow/requirements.txt'
-      - 'airflow/Dockerfile'
-      - 'secrets/**'
+  workflow_dispatch:  
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'docker-compose.yaml'
+  #     - 'airflow/requirements.txt'
+  #     - 'airflow/Dockerfile'
+  #     - 'secrets/**'
 
 jobs:
   rebuild:

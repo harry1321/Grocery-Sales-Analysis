@@ -1,0 +1,56 @@
+name: Deploy and Rebuild if Infra Changes
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-and-rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GCE_AIRFLOW_SSH_KEY }}" > ~/.ssh/airflow.key
+          echo "${{ secrets.GCE_SPARK_SSH_KEY }}" > ~/.ssh/spark.key
+          chmod 600 ~/.ssh/*.key
+
+      - name: Check if infrastructure files changed
+        id: check_infra
+        run: |
+          git diff --name-only HEAD^ HEAD > changed_files.txt
+          if grep -qE '^(docker-compose.yaml|airflow/requirements.txt|airflow/Dockerfile|secrets/)' changed_files.txt; then
+            echo "infra_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "infra_changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy to Airflow VM
+        run: |
+          ssh -i ~/.ssh/airflow.key -o StrictHostKeyChecking=no ${{ vars.SSH_USER_NAME }}@${{ vars.AIRFLOW_EXTERNAL_IP }} << 'EOF'
+            set -e
+            cd /home/learningde2025/Grocery-Sales-Analysis
+            git config --global --add safe.directory /home/learningde2025/Grocery-Sales-Analysis
+            git pull origin main
+
+            if [ "${{ steps.check_infra.outputs.infra_changed }}" = "true" ]; then
+              docker compose down --remove-orphans --volumes --rmi all
+              docker compose up airflow-init
+              docker compose up -d
+            fi
+          EOF
+
+      - name: Deploy to Spark VM
+        run: |
+          ssh -i ~/.ssh/spark.key -o StrictHostKeyChecking=no ${{ vars.SSH_USER_NAME }}@${{ vars.SPARK_EXTERNAL_IP }} << 'EOF'
+            set -e
+            cd /home/learningde2025/spark/Grocery-Sales-Analysis
+            git config --global --add safe.directory /home/learningde2025/spark/Grocery-Sales-Analysis
+            git pull origin main
+          EOF
