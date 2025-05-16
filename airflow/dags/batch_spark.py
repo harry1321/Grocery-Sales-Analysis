@@ -31,12 +31,36 @@ with dag:
         python_callable=task_date
     )
 
+    spark_rfm_model = LivyOperator(
+        task_id="spark_rfm_model",
+        file=SPARK_SCRIPT_PATHS['rfm'],
+        conf={
+            "spark.master": "local[*]",
+            "spark.app.name": "spark_rfm_model",
+            "spark.hadoop.fs.AbstractFileSystem.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS",
+            "spark.hadoop.fs.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem",
+            "spark.hadoop.fs.gs.auth.service.account.json.keyfile": SPARK_CREDENTIAL_PATH,
+            "spark.hadoop.fs.gs.auth.service.account.enable": "true",
+        },
+        args=[
+            "spark_rfm_model",
+            GCP_PROJECT_ID,
+            BUCKET_NAME
+        ],
+        executor_cores=2,
+        executor_memory="4g",
+        num_executors=2,
+        livy_conn_id="livy",  # 在 Airflow Connections 設定你的 Livy endpoint
+        polling_interval=60,
+        deferrable=True
+    )
+
     spark_raw_silver = LivyOperator(
         task_id="spark_raw_silver",
         file=SPARK_SCRIPT_PATHS['silver'],
         conf={
             "spark.master": "local[*]",
-            "spark.app.name": "spark_gen_recommend",
+            "spark.app.name": "spark_raw_silver",
             "spark.hadoop.fs.AbstractFileSystem.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS",
             "spark.hadoop.fs.gs.impl": "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem",
             "spark.hadoop.fs.gs.auth.service.account.json.keyfile": SPARK_CREDENTIAL_PATH,
@@ -48,7 +72,7 @@ with dag:
             BUCKET_NAME
         ],
         executor_cores=2,
-        executor_memory="2g",
+        executor_memory="4g",
         num_executors=2,
         livy_conn_id="livy",  # 在 Airflow Connections 設定你的 Livy endpoint
         polling_interval=60,
@@ -72,11 +96,11 @@ with dag:
             BUCKET_NAME
         ],
         executor_cores=2,
-        executor_memory="2g",
+        executor_memory="4g",
         num_executors=2,
         livy_conn_id="livy",  # 在 Airflow Connections 設定你的 Livy endpoint
         polling_interval=60,
         deferrable=True
     )
 
-date >> spark_raw_silver >> spark_silver_gold
+date >> spark_rfm_model >> spark_raw_silver >> spark_silver_gold

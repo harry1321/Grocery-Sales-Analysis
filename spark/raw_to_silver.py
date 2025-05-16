@@ -17,7 +17,7 @@ spark = SparkSession.builder \
 
 # 計算每個用戶購買每個商品的次數
 sales = spark.read.format("bigquery") \
-            .option("table", "datacamp-nytaxi-dbt-2025.prod_grocery_data.sales") \
+            .option("table", "datacamp-nytaxi-dbt-2025.prod_silver_layer.stg_sales") \
             .load()
 user_train = sales.filter((sales.SalesDate.isNotNull())) \
             .select("CustomerID", "ProductID") \
@@ -54,7 +54,7 @@ user_recs_flat = user_recommendation.select(
 
 user_recs_flat.write \
     .format("bigquery") \
-    .option("table", f"{GCP_PROJECT_ID}.prod_silver_layer.stg_recommend") \
+    .option("table", f"{GCP_PROJECT_ID}.prod_silver_layer.fct_recommend") \
     .option("temporaryGcsBucket", f"{BUCKET_NAME}") \
     .mode("overwrite") \
     .save()
