@@ -1,24 +1,105 @@
-# Retail Sales Data Engineering Pipeline
+# Cloud-Based Grocery Sales Analytics Pipeline
+
+![Python](https://img.shields.io/badge/Python-3776ab?style=flat&logo=python&logoColor=white)
+![SQL](https://img.shields.io/badge/-SQL-e69138?style=flat&logo=sql&logoColor=white)
+![Airflow](https://img.shields.io/badge/Apache%20Airflow-017CEE?logo=apacheairflow&logoColor=white&style=flat)
+![GCP](https://img.shields.io/badge/Google%20Cloud-4285F4?logo=googlecloud&logoColor=white&style=flat)
+![Apache Spark](https://img.shields.io/badge/Apache%20Spark-E25A1C?logo=apachespark&logoColor=fff&style=flat)
+![Livy](https://img.shields.io/badge/Apache%20Livy-Spark%20Job%20API-003B57?logo=apache&logoColor=white&style=flat)
+![DBT](https://img.shields.io/badge/dbt-Data%20Modeling-F26639?logo=dbt&logoColor=white&style=flat)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?logo=github-actions&logoColor=white)
+![Terraform](https://img.shields.io/badge/Terraform-7B42BC?logo=terraform&logoColor=white&style=flat)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=FFFFFF)
 
 ---
 
 <div align="center">
 
 [Problem Statement](#problem-statement) •
-[Solution](#solution) •
-[Project Details](#project-details) •
-[Data Pipeline Architecture](#data-pipeline-architecture) <br>
-[Running the Project](#running-the-project) •
+[Solution](#solution-overview) •
+[Project Details](#project-details) • 
+[Running the Project](#how-to-run-this-project) <br>
 [Dashboard](#dashboard) • 
 [Contact](#contact-information) • 
-[Awesome Resources](#awesome-resources)
+[Acknowledgments](#acknowledgments)
 </div>
 
 ---
+This project demonstrates deploying an end to end data pipeline on cloud that transforms raw grocery sales data into actionable business insights. Using GCP, Spark, Airflow, DBT, and Looker Studio, the project automate data ingestion, transformation, and visualization to answer critical business questions such as:
 
-This project builds a data engineering pipeline to analyze grocery sales data and produce an interactive dashboard. The dashboard enables us to explore revenue by cities, assess customer purchasing patterns, and evaluate salesperson performance to uncover key drivers behind sales trends.
+- Who are our top-performing salespeople and customers?
+- Which regions generate the most revenue?
+- How do product categories contribute to revenue?
+- What are our hot selling products?
 
-The Grocery Sales Dataset, sourced from Kaggle, comprises seven interconnected tables covering transactional, customer, product, and geographic data. The dataset includes detailed records of product categories, customers’ personal and location information, product attributes, employee details, and a comprehensive sales log. The data spans a four-month period and provides a rich foundation for analyzing consumer behavior, sales performance, and regional sales distribution.
+By focusing on these metrics, the project emulates the day-to-day work of a data engineer supporting data analyst for decision-makering in sales and marketing.
+
+<!-- This project builds a data engineering pipeline to analyze grocery sales data and produce an interactive dashboard. The dashboard enables us to explore revenue by cities, assess customer purchasing patterns, and evaluate salesperson performance to uncover key drivers behind sales trends. -->
+
+## Problem Statement
+
+<!-- This dashboard aims to tackle real-world business challenges such as understanding customer purchasing patterns, evaluating sales team effectiveness, and identifying high-performing regions. Specifically, the goal is to enable data-driven decisions that optimize marketing strategies, improve customer retention, and allocate sales resources more effectively.
+
+The problem statement focuses on three core areas:
+- Customer Purchase Behavior — Who are our repeat customers, and how much do they spend? What kind of product creates most revenue and what is the porpotion of each product category?
+- Salesperson Effectiveness — Which employees are driving the most value?
+- Geographic Sales Insights — Where are the sales hotspots across cities? -->
+
+Transaction records come in every day, and retailers must make data-driven decisions to effectively manage their business. Without tools that automatically process this raw data, these records would be nothing more than meaningless numbers. Retailers could struggle with fragmented data and a lack of automated processing. Therefore, a scalable, scheduled data processing pipeline is essential.
+
+Once the records are cleaned and organized, retailers can extract key business insights such as:
+
+- Customer Behavior: Who are our repeat customers? What is their spending pattern?
+- Sales Team Performance: Which employees generate the most revenue?
+- Geographic Analysis: Which cities are leading in sales?
+
+## Solution Overview
+To address those problems, this project implemented a scalable ELT pipeline that will:
+
+- Ingestes and processes over 6.7 million transaction records automatically using Airflow
+- Generates product recommendations for customers using Spark
+- Uses DBT to model and transform data into fact and dimension tables
+- Visualizes data on Looker Studio
+
+In the end of this ELT pipeline, a dashboard will be built to provide some business insights such as:
+- Top 10 customers by order value
+- Top 10 employees by sales
+- Top 10 cities by revenue
+- Hot selling products
+- Revenue trends over time
+- Revenue produce by product Category
+- Customer segmentation by average order value
+
+## Project Details
+The data pipeline automates the data processing workflow utilizing the following tech stacks:
+- [`Apache Airflow`](https://airflow.apache.org/) for data pipeline orchestration
+- [`Google Cloud Platform (GCP)`](https://cloud.google.com/) services for data lake, data warehouse and virtual machine
+- [`Apache Spark`](https://spark.apache.org/) for data processing
+- [`Apache Livy`](https://livy.apache.org/) for using REST API ti trigger Spark jobs
+- [`DBT`](https://www.getdbt.com/) for data modeling and transformation
+- [`GitHub Actions`](https://github.com/features/actions) for CI/CD
+- [`Terraform`](https://github.com/hashicorp/terraform) for cloud resources provision
+- [`Looker Studio`](https://lookerstudio.google.com/) for building dashboard
+
+### Data Pipeline Architecture
+
+This pipeline contains the following parts of precessing data, and **all tasks are build and run on the cloud**:
+
+- **Data Extraction**: In Airflow a task called get will download data files from [Kaggle Grocery Sales Database](https://www.kaggle.com/datasets/andrexibiza/grocery-sales-dataset) by KaggleAPI. 
+    - This dataset is consists of sales transactions, customer demographics, product details, employee records, and geographical information across multiple cities. 
+    - The Grocery Sales Dataset, sourced from Kaggle, comprises seven interconnected tables covering transactional, customer, product, and geographic data. 
+    - The dataset includes detailed records of product categories, customers’ personal and location information, product attributes, employee details, and a comprehensive sales log. 
+    - The data spans a four-month time period begins from January 1st in 2018 to May 10th in 2018 with 6,758,125 rows of transation data.
+
+- **Data Loading**: In the second stage, the Airflow tasks stored the raw data in Google Cloud Storage for long term storage, and then loaded those files to BigQuery for further transformed and processed.
+
+- **Data Processing & Transform**: In this stage, Airflow automatically used DBT for data transformation and PySpark for customer segmentation and generating product recommendations. 
+    - In DBT models, seeds data firstly be created as tables, and then join raw data sperately to create customer, employee and product dimensional models.
+    - After building dimensional tables, DBT builds a fact table called `fct_sales` **partioned by `SalesDay` and clustering by `CustomerID`**. The reason for doing so is that the downstream models will group by `CustomerID` frequently and the dashboard will apply a date range filter to filter out target data.
+    - Spark is used to categorize customers based on RFM model and generate recommendations for each customer with ALS model. In this stage, two fact tables is created.
+    - In the gold layer of data, four models are created in order to build the KPI dashboard, which are `mart_sales_summary`, `mart_customer_behavior`,  `mart_employee_performance` and `mart_recommend`.
+
+- **CI/CD**: To achieve continous deployment without manual intervention, GitHub Actions is used to detect commits or change in DAGs and cloud resources. If commits are pushed in main branch, compute engines working on cloud will automactically catch up the latest version pipelines.
 
 Diagram below shows an overview of data pipeline architecture used in this project.
 
@@ -27,137 +108,21 @@ Diagram below shows an overview of data pipeline architecture used in this proje
     <em></em>
 </p>
 
+## How to Run This Project
 
-
-## Problem Statement
-
-This dashboard aims to tackle real-world business challenges such as understanding customer purchasing patterns, evaluating sales team effectiveness, and identifying high-performing regions. Specifically, the goal is to enable data-driven decisions that optimize marketing strategies, improve customer retention, and allocate sales resources more effectively.
-
-The problem statement focuses on three core areas:
-- Customer Purchase Behavior — Who are our repeat customers, and how much do they spend? What kind of product creates most revenue and what is the porpotion of each product category?
-- Salesperson Effectiveness — Which employees are driving the most value?
-- Geographic Sales Insights — Where are the sales hotspots across cities?
-
-## Solution
-
-This pipeline will automatically process data and prepare tables for analysis in Google BigQuery, which wil then be used to build a dashboard. The dashboard presents five charts directly aligned with the problem statement. 
-It includes：
-- A bar chart presents top 10th ranking cities by total revenue
-- A bar chart shows top 10th employees ranking by sales over time
-- A bar chart shows top 10th customers ranking by total order value over time
-- A line chart shows the sales trend over time
-- A pie chart illustrates sales revenue distribution across product categories
-
-Additionally, customer segmentation is visualized through metrics such as total spending and average order value. These visualizations collectively provide insights into sales dynamics, team performance, and customer behavior, making the dashboard a powerful tool for strategic planning and operational decision-making.
-
-## Project Details
-This project proposes a data engineering pipeline that automates the data processing workflow utilizing the following tech stacks:
-- [`Airflow`](https://airflow.apache.org/) for data pipeline orchestration
-- `Google Cloud Platform (GCP)` services for data lake, data warehouse and virtual machine
-- [`DBT`](https://www.getdbt.com/) for data modeling and transformation
-- [`Terraform`](https://github.com/hashicorp/terraform) for cloud resources provision
-- `Looker Studio` for building dashboard
-
-### Data Pipeline Architecture
-
-This pipeline contains the following parts of precessing data, and **all tasks were built and ran on the cloud**:
-
-- **Data Extraction**: In airflow a task called get will download data files from [Kaggle Grocery Sales Database](https://www.kaggle.com/datasets/andrexibiza/grocery-sales-dataset) by KaggleAPI which consists of sales transactions, customer demographics, product details, employee records, and geographical information across multiple cities. Time period begins from January 1st in 2018 to May 10th in 2018 with 6,758,125 rows of transation data.
-
-- **Data Loading**: In the second stage, the airflow tasks will store the raw data in Google Cloud Storage for long term storage. Then load files from GCS to BigQuery dataset with defined schema, after that all tables are ready to be transformed by DBT.
-
-- **Data Transform**: First, seeds data will be created into tables by DBT, and then join with customer data, employee data and product data as dimensional model. After that a staging model called `stg_sales` is built as a fact table which is **partioned by `SalesDay` and clustering by `CustomerID`**. The reason for doing so is that the downstream models will groupby `CustomerID` frequently and the dashboard will apply a date range filter to filter out target data. In the gold layer of models three models are created in order to build a dashboard, which are `fct_sales_summary`, `fct_customer_behavior` and `fct_employee_performance`.
-
-
-To summarize here is a snapshot from Airflow web UI to show how these job are arranged.
-
-![architecture.png](/assets/workflow_dag.png)
-
-And this is a lineage describing how models are built in DBT.
-
-![lineage.png](/assets/lineage.png)
-
-## Running the Project
-
-### Prerequisites
-- Clone this project.
-- Ensure you have a GCP, a DBT cloud and a Kaggle account.
-- Clone this project to local drive for cloud services build-up.
-- Prepare credentials API keys.
-    - Store GCP credentials API key with GCE admin role and GCS admin role in `./secrets`.
-    - Store GCP credentials API key with GCS admin role and GBQ admin role in `./airflow/google`.
-    - Store Kaggle API key in `./airflow/dags/.kaggle`
-- Edit variables.json to ensure your cloud resource name are all set up properly.
-
-```
-For GCP Credentials you can refer [here](https://cloud.google.com/docs/authentication/api-keys#create) for instructions. 
-Ensure proper IAM role was given to the user.
-
-For Kaggle API Key Refer [here](https://www.kaggle.com/docs/api) for instructions. 
-```
-
-### Files
-- `/airflow` : 
-    - `/dags` :
-        - `/.kaggle` : Storge credential key for Kaggle API.
-        - `/helper` :
-            - `variables.py` : Store global variables will be imported in other scripts.
-            - `read_load.py` : Functions to load data to Google Cloud Storage and BigQuery.
-            - `task_functions.py` : Functions used in the Airflow DAG.
-        - `batch_data_etl.py` : Airflow DAG setup for orcorchestrating the ELT process.
-    - `/google` : Storge credential key for accessing GCP service (GBQ,GCS).
-    - `Dockerfile` : Customize docker image for airflow service.
-    - `requirements.txt` : Python package that will be installed during docker image build phase and used in the pipeline.
-    - `variables.json` : Variables will be imported in Airflow. When the airflow server is up make sure to import this file through the UI.
-- `/dbt` : 
-    - `models` :
-        - `gold_layer` : Build fact tables: fct_sales_summary, fct_customer_behavior, fct_employee_performance
-        - `silver_layer` : Build staging model and dimensional models including: stg_sales, dim_customers, dim_employees, dim_products
-    - `seeds` : Load static, infrequently changing data into data warehouse.
-    - `dbt_project.yml` : Declare general setting in DBT project.
-    - `package.yml` : Declare the external DBT packages your project depends on.
-- `/secrets` : Storge credential key for building GCP service (GCE,GCS).
-- `/terraform` : 
-    - `main.tf` : Declare resources needed to build.
-    - `variables.tf` : Store key variables for GCP service.
-- `docker-compose.yaml` : Building airflow docker service and its dependent services on GCE.
-
-### Reproducing
-1. Cloud resources provision:
-    - Update the terraform `main.tf` `variable.tf` with your GCP project ID and desired resource configurations before running these commands.
-    - To build cloud resource you need a [Local Setup for Terraform and GCP](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/01-docker-terraform/1_terraform_gcp)
-    - Run `terraform init` then `terraform plan` then `terraform apply`.
-2. Prepare DBT production environment:
-    - Make sure you have a **Team** DBT cloud account so that you can use API to trigger jobs created in DBT cloud.
-    - Make connections with your cloud data warehouse service.
-    - Create a project and connected to your forked project.
-    - Create a production environment and make sure to create a service token which you will need in the airflow UI connection setting.
-    - You can create jobs which can be triggered by airflow and remember to copy all the jobs ID to `variables.json`.
-3. Building airflow service:
-    - The cloud resources have already been built in step 1, and now you need to access into the VM and clone this project. After that, run the shell script called `run_airflow.sh` in order to install docker.
-    - After docker is installed, go to `./Retail-Promo-Analysis` and run the command below.
-        - `docker compose up airflow-init`
-        - `docker compose up -d`
-    - When all containers are up and healthy, you now can visit the airflow UI from http://**your VM external IP**:8080.
-    - Go to the variables setting in airflow UI, and upload the `variables.json` under airflow directory.
-    - Go to the connection setting in airflow UI, and in here you need to add a connection to your DBT cloud. For more instructions go to [Guides to Airflow and dbt Cloud](https://docs.getdbt.com/guides/airflow-and-dbt-cloud?step=1)
-4. Trigger ELT pipeline in airflow UI.
-    - Once all the services are set, and we are ready to go.
-    - Since the dataset I used is a historical data, so you've to trigger the pipeline on your own.
-    - Now visit the dags you created and trigger pipeline in airflow UI.
-5. Building your own dashboard
-    - Visit [Looker Studio](https://lookerstudio.google.com/) and start to build your dashboard.
+If you would like to learn more about this project, please follow the instructions in [`reproduce.md`](/reproduce.md).
 
 ## Dashboard
 You can access this dashboard from [here](https://lookerstudio.google.com/s/jEFS_2hqVB0).
 
-![lineage.png](/assets/dashboard_snap.png)
+![dashboard.png](/assets/dashboard_snap.png)
 
 ## Contact Information
-📧 Email: [r08521524@ntu.edu.tw](mailto:r08521524@ntu.edu.tw)  
-🔗 LinkedIn: [HAOYU YANG](https://www.linkedin.com/in/ntuhyu)  
 
 Feel free to reach out!
+
+📧 Email: [r08521524@ntu.edu.tw](mailto:r08521524@ntu.edu.tw)  
+🔗 LinkedIn: [HAOYU YANG](https://www.linkedin.com/in/ntuhyu)  
 
 ## Acknowledgments
 - A final project for [Data Engineering Zoomcamp](https://github.com/DataTalksClub/data-engineering-zoomcamp) by [DataTalks.Club](http://datatalks.club/)
