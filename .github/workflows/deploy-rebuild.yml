@@ -1,9 +1,10 @@
 name: Deploy and Rebuild if Infra Changes
 
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
+  workflow_dispatch:
 
 jobs:
   deploy-and-rebuild:

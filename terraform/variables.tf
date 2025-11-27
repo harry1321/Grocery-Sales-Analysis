@@ -21,3 +21,8 @@ variable "credential" {
   description = "Path of credential file"
   default     = "../secrets/gce_terraform.json"
 }
+
+variable "airflow_variables_map" {
+  description = "A map containing all Airflow Variables to be stored in Secret Manager"
+  type        = map
+}
