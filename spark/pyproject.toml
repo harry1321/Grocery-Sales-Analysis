@@ -1,0 +1,28 @@
+[project]
+name = "spark"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "jupyter>=1.1.1",
+    "matplotlib>=3.10.7",
+    "pandas>=2.3.3",
+    "scikit-learn>=1.7.2",
+    "seaborn>=0.13.2",
+    "yellowbrick>=1.5",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.6",
+]
+
+[tool.ruff]
+line-length = 125
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N"]
+
+[tool.ruff.format]
+quote-style = "double"

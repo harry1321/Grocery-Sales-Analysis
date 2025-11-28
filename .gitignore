@@ -1,7 +1,13 @@
-/.venv/
-/.ruff_cache/
-/jupyter/
-/secrets/
-**/.env
+jupyter/
+secrets/
+*.env
+
+# Python-generated files
+__pycache__/
+.ruff_cache/
+
+# Virtual environments
+.venv
+.python-version
 
 !/terraform/.env.template

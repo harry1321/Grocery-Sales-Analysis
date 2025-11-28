@@ -1,0 +1,30 @@
+[project]
+name = "airflow"
+version = "0.1.0"
+description = "Deploy Airflow service on GCE which will use DBT and spark to interact with GCP"
+requires-python = ">=3.12"
+dependencies = [
+    "apache-airflow-providers-apache-livy>=4.4.3",
+    "apache-airflow-providers-common-compat==1.6.0",
+    "apache-airflow-providers-dbt-cloud==3.11.0",
+    "google-cloud-bigquery==3.21.0",
+    "google-cloud-secret-manager>=2.16.0",
+    "google-cloud-storage==2.16.0",
+    "kaggle>=1.8.2",
+    "pendulum>=3.1.0",
+    "requests>=2.32.5",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.6",
+]
+
+[tool.ruff]
+line-length = 125
+
+[tool.ruff.lint]
+select = ["AIR001", "E", "F", "I", "N"]
+
+[tool.ruff.format]
+quote-style = "double"
