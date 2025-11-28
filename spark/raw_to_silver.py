@@ -1,10 +1,8 @@
 import sys
-import logging
-
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, count, expr
 
 from pyspark.ml.recommendation import ALS
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, count, expr
 
 # 接收從外部傳入的參數
 SPARK_APP_NAME = sys.argv[1]

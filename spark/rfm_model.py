@@ -1,10 +1,11 @@
 import sys
 
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, max as spark_max, datediff, countDistinct, sum as spark_sum, lit, when
-
-from pyspark.ml.feature import VectorAssembler, RobustScaler
 from pyspark.ml.clustering import KMeans
+from pyspark.ml.feature import RobustScaler, VectorAssembler
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, countDistinct, datediff, lit, when
+from pyspark.sql.functions import max as spark_max
+from pyspark.sql.functions import sum as spark_sum
 
 # Read args
 SPARK_APP_NAME = sys.argv[1]
@@ -80,7 +81,7 @@ df_result = df_clustered.select("CustomerID", "Recency", "Frequency", "Monetary"
 
 # write result to GBQ
 df_result.write.format("bigquery") \
-    .option("table", f"datacamp-nytaxi-dbt-2025.prod_gold_layer.fct_rfm_cluster") \
-    .option("temporaryGcsBucket", f"decamp_project_sample") \
+    .option("table", "datacamp-nytaxi-dbt-2025.prod_gold_layer.fct_rfm_cluster") \
+    .option("temporaryGcsBucket", "decamp_project_sample") \
     .mode("overwrite") \
     .save()

@@ -1,16 +1,13 @@
-import os
-from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
-
-from google.cloud import storage
-from google.cloud import bigquery
+from google.cloud import bigquery, storage
 from google.cloud.bigquery import SchemaField
 
-from helper.variables import GCP_CREDENTIALS_FILE_PATH, GCP_PROJECT_ID, BUCKET_NAME, BUCKET_CLASS, BUCKET_LOCATION
+from helper.variables import BUCKET_CLASS, BUCKET_LOCATION, BUCKET_NAME, GCP_CREDENTIALS_FILE_PATH, GCP_PROJECT_ID
 
-class GCSTools():
+
+class GCSTools:
     def __init__(self, credentials_file=GCP_CREDENTIALS_FILE_PATH):
         self.storage_client = storage.Client.from_service_account_json(credentials_file)
 
@@ -18,10 +15,10 @@ class GCSTools():
         print(f"This is a GCSTools with gcp_credentials_file locates in {GCP_CREDENTIALS_FILE_PATH}")
 
     def list_buckets(self):
-        """ Lists all buckets. """
+        """Lists all buckets."""
         for bucket in self.storage_client.list_buckets():
             print(bucket.name)
-    
+
     def create_bucket(self, bucket_name):
         """
         Create a new bucket in the US region with the standard storage class.
@@ -31,46 +28,46 @@ class GCSTools():
         new_bucket = self.storage_client.create_bucket(bucket, location=BUCKET_LOCATION)
 
         print(f"Created bucket {new_bucket.name} in {new_bucket.location} with storage class {new_bucket.storage_class}")
-        
+
         return new_bucket
+
 
 class GCSBucket(GCSTools):
     def __init__(self, bucket_name=BUCKET_NAME):
         super().__init__()
         self.bucket_name = bucket_name
         self.bucket = self.storage_client.bucket(bucket_name)
-    
+
     def info(self):
         print(f"This is a GCSBucket under GCSTools with bucket name: {self.bucket_name}")
-    
+
     def set_bucket_name(self, name):
-        """ Change the target bucket """
+        """Change the target bucket"""
         self.bucket_name = name
         self.bucket = self.storage_client.bucket(name)
 
-    def list_files(self,prefix,suffix='.'):
-        """ Lists all blobs with prefix. """
+    def list_files(self, prefix, suffix="."):
+        """Lists all blobs with prefix."""
         blobs = self.bucket.list_blobs(prefix=prefix)
-        temp = [blob.name for blob in blobs if f'{suffix}' in blob.name] 
+        temp = [blob.name for blob in blobs if f"{suffix}" in blob.name]
         return temp
 
     def check(self, blob_name):
-        """ Check a file exsists or not """
+        """Check a file exsists or not"""
         return storage.Blob(bucket=self.bucket, name=blob_name).exists(self.storage_client)
 
     def delete(self):
-        """ Delete a file in bucket """
+        """Delete a file in bucket"""
         pass
 
     def retrieve_object_from_bucket(self, object_name, destination_file_path):
-        
         """
-            project_id (str): Your Google Cloud project ID.
-            bucket_name (str): The name of the GCS bucket.
-            object_name (str): The name of the object you want to retrieve.
-            destination_file_path (str): The path to save the retrieved object locally.
+        project_id (str): Your Google Cloud project ID.
+        bucket_name (str): The name of the GCS bucket.
+        object_name (str): The name of the object you want to retrieve.
+        destination_file_path (str): The path to save the retrieved object locally.
         """
-        
+
         try:
             # Get the blob (object) from the bucket
             blob = self.bucket.blob(object_name)
@@ -84,7 +81,7 @@ class GCSBucket(GCSTools):
             print(f"Error: {e}")
 
     def upload_file(self, local_file_path, remote_file_name):
-        """ Upload the file to self.bucket """
+        """Upload the file to self.bucket"""
         blob = self.bucket.blob(remote_file_name)
         blob.upload_from_filename(local_file_path)
         print(f"File {local_file_path} uploaded to gs://{self.bucket_name}/{remote_file_name}")
@@ -110,11 +107,12 @@ class GCSBucket(GCSTools):
         for local_file_path, remote_file_name in zip(file_paths, string_paths):
             self.upload_file(local_file_path, remote_file_name)
 
-class GCBigQuery():
+
+class GCBigQuery:
     def __init__(self, dataset_name, credentials_file=GCP_CREDENTIALS_FILE_PATH):
         self.bq_client = bigquery.Client.from_service_account_json(credentials_file)
         self.dataset_id = dataset_name
-    
+
     def _check_dataset_exists(self):
         """檢查 BigQuery 中是否存在指定的 dataset。"""
         dataset_ref = self.bq_client.dataset(self.dataset_id)
@@ -127,7 +125,7 @@ class GCBigQuery():
                 self._create_dataset()
             else:
                 raise
-    
+
     def _create_dataset(self):
         """在 BigQuery 中創建指定的 dataset。"""
         dataset_ref = self.bq_client.dataset(self.dataset_id)
@@ -143,17 +141,13 @@ class GCBigQuery():
         blob = f"gs://{bucket_name}/{blob_name}"
         table_name = f"{GCP_PROJECT_ID}.{self.dataset_id}.{table_name}"
         self._check_dataset_exists()
-        
-        job = self.bq_client.load_table_from_uri(
-            blob, 
-            destination=table_name, 
-            job_config=job_config
-        )
+
+        job = self.bq_client.load_table_from_uri(blob, destination=table_name, job_config=job_config)
         job.result()
 
-    def generate_bigquery_schema(self,df: pd.DataFrame):
+    def generate_bigquery_schema(self, df: pd.DataFrame):
         # https://medium.com/@danilo.drobac/auto-generate-bigquery-schema-from-a-pandas-dataframe-603f09ecad8b
-        TYPE_MAPPING = {
+        type_mapping = {
             "i": "INTEGER",
             "u": "NUMERIC",
             "b": "BOOLEAN",
@@ -173,7 +167,7 @@ class GCBigQuery():
             else:
                 fields = ()
 
-            type = "RECORD" if fields else TYPE_MAPPING.get(dtype.kind)
+            type = "RECORD" if fields else type_mapping.get(dtype.kind)
             schema.append(
                 SchemaField(
                     name=column,
@@ -183,6 +177,7 @@ class GCBigQuery():
                 )
             )
         return schema
+
 
 # map time interval to timestamp (specify time zone)
 """

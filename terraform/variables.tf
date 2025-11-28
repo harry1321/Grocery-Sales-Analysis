@@ -22,6 +22,16 @@ variable "credential" {
   default     = "../secrets/gce_terraform.json"
 }
 
+variable "livy_conn_uri" {
+  description = "The connection URI for Livy service."
+  type        = string
+}
+
+variable "dbt_conn_uri" {
+  description = "The connection URI for DBT cloud service."
+  type        = string
+}
+
 variable "airflow_variables_map" {
   description = "A map containing all Airflow Variables to be stored in Secret Manager"
   type        = map

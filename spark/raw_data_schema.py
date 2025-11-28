@@ -1,4 +1,5 @@
-from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DecimalType, DateType, TimestampType
+from pyspark.sql.types import DateType, DecimalType, IntegerType, StringType, StructField, StructType, TimestampType
+
 # 定義 schema
 categories_schema = StructType([
     StructField("CategoryID", IntegerType(), True),

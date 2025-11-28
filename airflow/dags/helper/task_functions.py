@@ -1,8 +1,7 @@
 import os
-from pathlib import Path
-from datetime import datetime, timedelta
 
-from helper.read_load_gcs import GCSBucket, GCBigQuery
+from helper.read_load_gcs import GCBigQuery, GCSBucket
+
 
 def task_date(**kwargs):
     # Take 2021/05/30 as example the format should be date="20210530"
@@ -16,8 +15,8 @@ def task_get(ti,dataset_name='andrexibiza/grocery-sales-dataset') -> None:
     '''
 
     # Get kaggle crdentials
-    import os
     import json
+
     from kaggle.api.kaggle_api_extended import KaggleApi
     kaggle_config_path = "/opt/airflow/dags/.kaggle/kaggle.json"
     if not os.path.exists(kaggle_config_path):
@@ -42,7 +41,7 @@ def task_get(ti,dataset_name='andrexibiza/grocery-sales-dataset') -> None:
 def task_load_gcs(ti) -> None:
     folder_path = '/opt/airflow/tmp'
     gcs = GCSBucket()
-    gcs.upload_directory(source_directory=folder_path, prefix=f"raw")
+    gcs.upload_directory(source_directory=folder_path, prefix="raw")
     # Clean up the tmp folder
     import shutil
     shutil.rmtree(folder_path)

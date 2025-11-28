@@ -1,5 +1,4 @@
 from google.cloud import bigquery
-from google.cloud.bigquery import SchemaField
 
 dataset_schema = {}
 sales = {
